@@ -12,13 +12,14 @@ if [ ! -e "$1" ]; then
   exit 2
 fi
 
-#create soft links for all files in map-files.txt
+# prepare soft links for all files in map-files.txt
 LINK_SCRIPT="_create_links-$(date '+%Y-%m-%d_%H:%M:%S').sh"
 cat "$1" | awk -F ";" '{print "ln -s "$1" "$2}' > $LINK_SCRIPT
 
 # print blank line, to highlight any errors the linking might produce
 # such as double file-names
 echo
+# actually create softlinks
 sh $LINK_SCRIPT;
 # and another blank line to "close"
 echo
