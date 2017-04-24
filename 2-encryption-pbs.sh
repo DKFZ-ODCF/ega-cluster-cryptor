@@ -1,4 +1,10 @@
+#!/bin/bash
+
 # INFO: if you want to restart the encryption for a file, delete all the corresponding *.md5 and *.gpg files
+#
+# This script will automatically find the most-recent "fileList*.txt" file and process files therein.
+# If you wish to use a different fileList, you can specify this as a command line argument:
+#   2-encryption-pbs.sh your-fileList.txt
 
 # default: use most-recent filelist in current working directory
 FILE_LIST=$(ls -t fileList*.txt | head -n1)
@@ -23,7 +29,11 @@ if [ ! -e $FILE_LIST ]; then
   exit 3
 fi
 
-unencryptedFiles=$(comm -23 <(cat fileList.txt | sort) <(find `pwd` -type f -name "*.gpg" | sed "s/\.gpg//g" | sort))
+unencryptedFiles=$(\
+  comm -23 \
+   <(cat "$FILE_LIST" | sort) \
+   <(find `pwd` -type f -name "*.gpg" | sed "s/\.gpg//g" | sort)
+)
 
 WORKDIR=$(pwd)
 for FULL_FILE in $unencryptedFiles
