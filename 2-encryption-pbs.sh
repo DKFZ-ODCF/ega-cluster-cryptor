@@ -6,28 +6,14 @@
 # If you wish to use a different fileList, you can specify this as a command line argument:
 #   2-encryption-pbs.sh your-fileList.txt
 
-# default: use most-recent filelist in current working directory
-FILE_LIST=$(ls -t fileList*.txt | head -n1)
 
-# check for command line override
-if [ ! -z "$1" ]; then
-  echo "using file list from command line: $1"
-  FILE_LIST=$1;
-else
-  echo "using auto-detected file list: $FILE_LIST"
-fi
+source ./util.sh;
 
-if [ -z $FILE_LIST ]; then
-  echo "ERROR: no file list to compare against! Please:
-  a) specify one on the command line, or
-  b) make sure there are 'fileList*.txt' in the CURRENT working dir for auto-detection"
-  exit 2
-fi
+# meaningful name for first argument
+OVERRIDE_FILE="$1"
 
-if [ ! -e $FILE_LIST ]; then
-  echo "ERROR: File not found: $FILE_LIST"
-  exit 3
-fi
+FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
+verify_fileList $FILE_LIST
 
 unencryptedFiles=$(\
   comm -23 \
