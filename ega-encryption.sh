@@ -3,7 +3,7 @@
 # Job Name
 #PBS -N ega-encryption.sh
 # cpu time
-#PBS -l walltime=24:00:00
+#PBS -l walltime=08:00:00
 # request 1 node
 #PBS -l nodes=1
 #PBS -A io_throttle
