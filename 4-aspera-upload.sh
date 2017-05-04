@@ -2,8 +2,6 @@
 
 export ASPERA_SCP_PASS="TODO";
 export ASPERA_DESTINATION="ega-box-TODO@fasp.ega.ebi.ac.uk:/."
-export WORKDIR="$PWD";
-cd $WORKDIR
 
 #TODO: make file-list overridable
 # Should take same fileList as script 2 & 3
