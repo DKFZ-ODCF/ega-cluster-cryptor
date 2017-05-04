@@ -30,7 +30,13 @@ FILE=`basename $FULL_FILE | awk '{print $1}'`
 # ln -s $FULL_FILE $FILE
 
 # process file
-cat $FILE | tee >( gpg -e --always-trust -r EGA_Public_key | tee $FILE.gpg | md5sum > $FILE.gpg.md5 ; echo "INTERNAL ${PIPESTATUS[*]}" > $INTERNAL ) | md5sum > $FILE.md5 ; echo "EXTERNAL ${PIPESTATUS[*]}" > $EXTERNAL
+#  Put all results into .partial files first, to signal that they are incomplete
+cat $FILE | tee >( gpg -e --always-trust -r EGA_Public_key | tee $FILE.gpg.partial | md5sum > $FILE.gpg.md5.partial ; echo "INTERNAL ${PIPESTATUS[*]}" > $INTERNAL ) | md5sum > $FILE.md5.partial ; echo "EXTERNAL ${PIPESTATUS[*]}" > $EXTERNAL
+
+# we're done, remove the ".partial" from the filenames
+mv $FILE.gpg.partial     $FILE.gpg
+mv $FILE.gpg.md5.partial $FILE.gpg.md5
+mv $FILE.md5.partial     $FILE.md5
 
 # store pipestatus into a file
 echo "`cat $INTERNAL`  `cat $EXTERNAL`  $FILE" > $WORKDIR/$FILE.pipestatus
