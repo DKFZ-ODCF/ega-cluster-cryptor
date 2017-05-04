@@ -34,6 +34,5 @@ cat $FILE | tee >( gpg -e --always-trust -r EGA_Public_key | tee $FILE.gpg | md5
 
 # store pipestatus into a file
 echo "`cat $INTERNAL`  `cat $EXTERNAL`  $FILE" > $WORKDIR/$FILE.pipestatus
-
-# delete temp files
+# delete pipestatus temp files
 rm $INTERNAL $EXTERNAL
