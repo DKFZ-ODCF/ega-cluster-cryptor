@@ -17,7 +17,7 @@ verify_fileList "$FILE_LIST"
 
 # convert "raw" list of bamfiles to encrypted versions and checksums
 UPLOAD_LIST="aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
-for UNENCRYPTED in $(cat "$FILE_LIST"); do
+while read -r UNENCRYPTED; do
   for EXTENSION in 'md5' 'gpg' 'gpg.md5'; do
     FILE="$UNENCRYPTED.$EXTENSION"
     if [ -e "$FILE" ]; then
@@ -26,9 +26,9 @@ for UNENCRYPTED in $(cat "$FILE_LIST"); do
       echo "File not found: $FILE"
     fi
   done
-done
+done < "$FILE_LIST"
 
-for FILE in $(cat "$UPLOAD_LIST")
-do
+# Actually upload all files
+while read -r FILE; do
   ascp -k2 -Q -l100M -L $WORKDIR $FILE $ASPERA_DESTINATION
-done
+done < "$UPLOAD_LIST"
