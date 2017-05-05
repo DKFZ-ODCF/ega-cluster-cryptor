@@ -1,11 +1,13 @@
 #!/bin/sh
 
+# first argument not empty?
 if [ -z "$1" ]; then
   echo "ERROR: Please specify a mapping file containing the files to link"
   echo "  Usage: $0 /PATH/TO/MAPPING/FILE.txt"
   exit 1
 fi
 
+# does filename of first argument exist?
 if [ ! -e "$1" ]; then
   echo "ERROR: Could not find specified mapping file to link:"
   echo "  missing: $1"

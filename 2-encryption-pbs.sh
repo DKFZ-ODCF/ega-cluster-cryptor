@@ -9,7 +9,7 @@
 
 source ./util.sh;
 
-# meaningful name for first argument
+# Get default, latest input file, OR whatever the user wants
 OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"

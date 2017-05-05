@@ -3,6 +3,13 @@
 export ASPERA_SCP_PASS="TODO";
 export ASPERA_DESTINATION="ega-box-TODO@fasp.ega.ebi.ac.uk:/."
 
+# Get list of ToDo files
+# Either most-recent fileList*.txt, OR whatever the user wants
+#
+# This should be the list of UNencrypted files, without any .gpg or .md5 extensions
+# The script will automatically search for the .md5, .gpg and .gpg.md5 files
+# (i.e. Use the same fileList as for starting the encryption)
+#
 OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
@@ -13,14 +20,20 @@ for FILENAME in $(cat "$FILE_LIST"); do
   # checksum of unencrypted file
   if [ -e "$FILENAME.md5" ];
     echo "$FILENAME.md5" >> "$UPLOAD_LIST"
+  else
+    echo "File not found: $FILENAME.md5"
   fi
   # encrypted file
   if [ -e "$FILENAME.gpg" ]; then
     echo "$FILENAME.gpg" >> "$UPLOAD_LIST"
+  else
+    echo "File not found: $FILENAME.gpg"
   fi
   # checksum of encrypted file
   if [ -e "$FILENAME.gpg.md5" ];
     echo "$FILENAME.gpg.md5" >> "$UPLOAD_LIST"
+  else
+    echo "File not found: $FILENAME.gpg.md5"
   fi
 done
 
