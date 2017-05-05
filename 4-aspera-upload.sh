@@ -10,6 +10,7 @@ export ASPERA_DESTINATION="ega-box-TODO@fasp.ega.ebi.ac.uk:/."
 # The script will automatically search for the .md5, .gpg and .gpg.md5 files
 # (i.e. Use the same fileList as for starting the encryption)
 #
+source ./util.sh;
 OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
@@ -17,7 +18,7 @@ verify_fileList "$FILE_LIST"
 # convert "raw" list of bamfiles to encrypted versions and checksums
 UPLOAD_LIST="aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
 for UNENCRYPTED in $(cat "$FILE_LIST"); do
-  for EXTENSION in "md5 gpg gpg.md5"; do
+  for EXTENSION in 'md5' 'gpg' 'gpg.md5'; do
     FILE="$UNENCRYPTED.$EXTENSION"
     if [ -e "$FILE" ]; then
       echo "$FILE" >> "$UPLOAD_LIST"
