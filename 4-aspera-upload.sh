@@ -29,6 +29,9 @@ while read -r UNENCRYPTED; do
 done < "$FILE_LIST"
 
 # Actually upload all files
+# TODO: ascp has a --file-list=$FILE option, maybe better?
+#   A single session with multiple files saves a lot of restarting/handshaking
+#   Especially for tiny-tiny md5sum files...
 while read -r FILE; do
   ascp -k2 -Q -l100M -L $WORKDIR $FILE $ASPERA_DESTINATION
 done < "$UPLOAD_LIST"
