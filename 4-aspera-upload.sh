@@ -14,27 +14,17 @@ OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
 
-# convert "raw" list of bamfiles to encrypted versions
+# convert "raw" list of bamfiles to encrypted versions and checksums
 UPLOAD_LIST="aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
-for FILENAME in $(cat "$FILE_LIST"); do
-  # checksum of unencrypted file
-  if [ -e "$FILENAME.md5" ];
-    echo "$FILENAME.md5" >> "$UPLOAD_LIST"
-  else
-    echo "File not found: $FILENAME.md5"
-  fi
-  # encrypted file
-  if [ -e "$FILENAME.gpg" ]; then
-    echo "$FILENAME.gpg" >> "$UPLOAD_LIST"
-  else
-    echo "File not found: $FILENAME.gpg"
-  fi
-  # checksum of encrypted file
-  if [ -e "$FILENAME.gpg.md5" ];
-    echo "$FILENAME.gpg.md5" >> "$UPLOAD_LIST"
-  else
-    echo "File not found: $FILENAME.gpg.md5"
-  fi
+for UNENCRYPTED in $(cat "$FILE_LIST"); do
+  for EXTENSION in "md5 gpg gpg.md5"; do
+    FILE="$UNENCRYPTED.$EXTENSION"
+    if [ -e "$FILE" ]; then
+      echo "$FILE" >> "$UPLOAD_LIST"
+    else
+      echo "File not found: $FILE"
+    fi
+  done
 done
 
 for FILE in $(cat "$UPLOAD_LIST")
