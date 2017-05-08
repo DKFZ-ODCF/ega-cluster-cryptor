@@ -16,7 +16,7 @@ FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
 
 # convert "raw" list of bamfiles to encrypted versions and checksums
-UPLOAD_LIST="aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
+UPLOAD_LIST="_aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
 while read -r UNENCRYPTED; do
   for EXTENSION in 'md5' 'gpg' 'gpg.md5'; do
     FILE="$UNENCRYPTED.$EXTENSION"
