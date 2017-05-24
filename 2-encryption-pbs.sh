@@ -14,10 +14,11 @@ OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
 
+# Get files from file_list that DON'T have a corresponding .gpg file
 unencryptedFiles=$(\
   comm -23 \
    <(cat "$FILE_LIST" | sort) \
-   <(find `pwd` -type f -name "*.gpg" | sed "s/\.gpg//g" | sort)
+   <(find $(pwd) -type f -name "*.gpg" | sed "s/\.gpg//g" | sort) \
 )
 
 WORKDIR=$(pwd)
