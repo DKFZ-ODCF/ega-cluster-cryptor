@@ -14,8 +14,10 @@ if [ ! -e "$1" ]; then
   exit 2
 fi
 
+DATE=$(date '+%Y-%m-%d_%H:%M:%S')
+
 # prepare soft links for all files in map-files.txt
-LINK_SCRIPT="_create_links-$(date '+%Y-%m-%d_%H:%M:%S').sh"
+LINK_SCRIPT="_create_links-$DATE.sh"
 cat "$1" | awk -F ";" '{print "ln -s "$1" "$2}' > $LINK_SCRIPT
 
 # print blank line, to highlight any errors the linking might produce
@@ -27,7 +29,7 @@ sh $LINK_SCRIPT;
 echo
 
 #create list of all links in folder
-ALL_LINKS="fileList_$(date '+%Y-%m-%d_%H:%M:%S').txt"
+ALL_LINKS="fileList_$DATE.txt"
 find `pwd` -type l > $ALL_LINKS
 
 echo "done! all links (including pre-existing ones):   $ALL_LINKS"
