@@ -31,7 +31,14 @@ FILE=`basename $FULL_FILE | awk '{print $1}'`
 
 # process file
 #  Put all results into .partial files first, to signal that they are incomplete
-cat $FILE | tee >( gpg -e --always-trust -r EGA_Public_key | tee $FILE.gpg.partial | md5sum > $FILE.gpg.md5.partial ; echo "INTERNAL ${PIPESTATUS[*]}" > $INTERNAL ) | md5sum > $FILE.md5.partial ; echo "EXTERNAL ${PIPESTATUS[*]}" > $EXTERNAL
+cat $FILE | tee >(
+    gpg -e --always-trust -r EGA_Public_key | tee \
+        $FILE.gpg.partial \
+        | md5sum > $FILE.gpg.md5.partial; \
+    echo "INTERNAL ${PIPESTATUS[*]}" > $INTERNAL \
+  ) \
+  | md5sum > $FILE.md5.partial; \
+  echo "EXTERNAL ${PIPESTATUS[*]}" > $EXTERNAL
 
 # we're done, remove the ".partial" from the filenames
 mv $FILE.gpg.partial     $FILE.gpg
