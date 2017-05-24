@@ -1,6 +1,6 @@
 
-# include utility functions
-source ./util.sh;
+# find wherever this script is, and load the util library next to it
+source ${BASH_SOURCE%/*}/util.sh
 
 OVERRIDE_FILE=$1
 

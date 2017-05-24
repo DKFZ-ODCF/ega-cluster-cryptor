@@ -6,8 +6,8 @@
 # If you wish to use a different fileList, you can specify this as a command line argument:
 #   2-encryption-pbs.sh your-fileList.txt
 
-
-source ./util.sh;
+# find wherever this script is, and load the util library next to it
+source ${BASH_SOURCE%/*}/util.sh
 
 # Get default, latest input file, OR whatever the user wants
 OVERRIDE_FILE="$1"
@@ -23,5 +23,5 @@ unencryptedFiles=$(\
 WORKDIR=$(pwd)
 for FULL_FILE in $unencryptedFiles
 do
-   qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ega-encryption.sh
+   qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ${BASH_SOURCE%/*}/ega-encryption.sh
 done
