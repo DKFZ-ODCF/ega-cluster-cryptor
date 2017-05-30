@@ -37,12 +37,24 @@ cat $FILE | tee >(
   | md5sum > $FILE.md5.partial; \
   echo "EXTERNAL ${PIPESTATUS[*]}" > $EXTERNAL
 
-# we're done, remove the ".partial" from the filenames
-mv $FILE.gpg.partial     $FILE.gpg
-mv $FILE.gpg.md5.partial $FILE.gpg.md5
-mv $FILE.md5.partial     $FILE.md5
-
 # store pipestatus into a file
 echo "$(cat $INTERNAL)  $(cat $EXTERNAL)  $FILE" > $TOTAL_PIPESTATUS
 # delete pipestatus temp files
 rm $INTERNAL $EXTERNAL
+
+# we're done. Check if everything worked without problems, and
+# rename our .partial files accordingly
+if [ "$(cat $TOTAL_PIPESTATUS)" == "INTERNAL 0 0 0  EXTERNAL 0 0 0  $FILE" ]; then
+  # success! no pipes broke :-D
+  mv "$FILE.gpg.partial"     "$FILE.gpg"
+  mv "$FILE.gpg.md5.partial" "$FILE.gpg.md5"
+  mv "$FILE.md5.partial"     "$FILE.md5"
+  rm $TOTAL_PIPESTATUS
+else
+  # failure! at least one pipe broke :-(
+  mv "$FILE.gpg.partial"     "$FILE.gpg.failed"
+  mv "$FILE.gpg.md5.partial" "$FILE.gpg.md5.failed"
+  mv "$FILE.md5.partial"     "$FILE.md5.failed"
+  # leave $TOTAL_PIPESTATUS around, in case people wish to debug.
+  exit 1 # signal non-success to PBS
+fi
