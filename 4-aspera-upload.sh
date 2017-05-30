@@ -35,7 +35,10 @@ OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
 
-# convert "raw" list of bamfiles to encrypted versions and checksums
+echo "using file-list: $FILE_LIST"
+
+
+# convert "raw" list of bamfiles to list of encrypted versions and checksums
 UPLOAD_LIST="_aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
 while read -r UNENCRYPTED; do
   for EXTENSION in 'md5' 'gpg' 'gpg.md5'; do
@@ -43,7 +46,7 @@ while read -r UNENCRYPTED; do
     if [ -e "$FILE" ]; then
       echo "$FILE" >> "$UPLOAD_LIST"
     else
-      echo "File not found: $FILE"
+      >&2 echo "WARNING: Expected file wasn't there: $FILE"
     fi
   done
 done < "$FILE_LIST"
