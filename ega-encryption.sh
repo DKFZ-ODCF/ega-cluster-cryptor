@@ -19,8 +19,9 @@
 cd $WORKDIR
 
 # set temp files
-INTERNAL=`mktemp`
-EXTERNAL=`mktemp`
+INTERNAL=$(mktemp --suffix="-encryption-pipestatus-internal")
+EXTERNAL=$(mktemp --suffix="-encryption-pipestatus-external")
+TOTAL_PIPESTATUS=$($WORKDIR/$FILE.pipestatus)
 
 # extract filename from full path
 FILE=$(basename $FULL_FILE)
@@ -42,6 +43,6 @@ mv $FILE.gpg.md5.partial $FILE.gpg.md5
 mv $FILE.md5.partial     $FILE.md5
 
 # store pipestatus into a file
-echo "`cat $INTERNAL`  `cat $EXTERNAL`  $FILE" > $WORKDIR/$FILE.pipestatus
+echo "$(cat $INTERNAL)  $(cat $EXTERNAL)  $FILE" > $TOTAL_PIPESTATUS
 # delete pipestatus temp files
 rm $INTERNAL $EXTERNAL
