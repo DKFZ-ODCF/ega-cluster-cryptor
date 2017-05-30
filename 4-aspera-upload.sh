@@ -1,7 +1,27 @@
 #!/bin/bash
 
+# TODO: extract to project-specif file, outside of repo
 export ASPERA_SCP_PASS="TODO";
 export ASPERA_DESTINATION="ega-box-TODO@fasp.ega.ebi.ac.uk:/."
+
+
+# check if user updated the aspera password and destination
+# TODO: this check will become more important once we extract these settings
+#   to an external, project-specific file
+if [ -z $ASPERA_SCP_PASS -o -z $ASPERA_DESTINATION ]; then
+  >&2 echo "ERROR: Aspera environment variables not set! exiting!
+  (\$ASPERA_SCP_PASS and \$ASPERA_DESTINATION)"
+fi
+
+# check if the aspera settings were updated, or contain the "TODO" marker
+# note that this substring scan requires the more advanced double-bracket test: [[
+#   this doesn't work in all shells, so we require bash
+# see also: http://timmurphy.org/2013/05/13/string-contains-substring-in-bash/
+if [[ ("$ASPERA_SCP_PASS" =~ "TODO") || ("$ASPERA_DESTINATION" =~ "TODO") ]]; then
+  >&2 echo "ERROR: Aspera environment variables still contain \"TODO\", exiting!
+  Did you already change them to the correct box+password for this submission?"
+fi
+
 
 # Get list of ToDo files
 # Either most-recent fileList*.txt, OR whatever the user wants
