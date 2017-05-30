@@ -22,12 +22,8 @@ cd $WORKDIR
 INTERNAL=`mktemp`
 EXTERNAL=`mktemp`
 
-# extract filename from full path and rename if it's required
-FILE=`basename $FULL_FILE | awk '{print $1}'`
-
-# LINK FILE TO WORKDIR
-# COMMENT OUT IF FILES ARE ALREADY LINKED !!!
-# ln -s $FULL_FILE $FILE
+# extract filename from full path
+FILE=$(basename $FULL_FILE)
 
 # process file
 #  Put all results into .partial files first, to signal that they are incomplete
