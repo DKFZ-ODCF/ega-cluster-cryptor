@@ -14,6 +14,8 @@ OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
 
+echo "using file-list: $FILE_LIST"
+
 # Get files from file_list that DON'T have a corresponding .gpg file
 unencryptedFiles=$(\
   comm -23 \
@@ -24,5 +26,7 @@ unencryptedFiles=$(\
 WORKDIR=$(pwd)
 for FULL_FILE in $unencryptedFiles
 do
-   qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ${BASH_SOURCE%/*}/ega-encryption.sh
+    # prepend filename before qsub job-id output (intentionally no newline!)
+    printf "%-29s " $FULL_FILE
+    qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ${BASH_SOURCE%/*}/ega-encryption.sh
 done

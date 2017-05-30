@@ -8,6 +8,8 @@ OVERRIDE_FILE=$1
 FILE_LIST=$(get_default_or_override_fileList $OVERRIDE_FILE);
 verify_fileList $FILE_LIST
 
+echo "using file-list: $FILE_LIST"
+
 echo "in filelist.txt " $(cat $FILE_LIST | wc -l)
 echo "encrypted successfully " $(cat *.pipestatus | grep    "INTERNAL 0 0 0  EXTERNAL 0 0 0  " | wc -l)
 echo "encryption failed "      $(cat *.pipestatus | grep -v "INTERNAL 0 0 0  EXTERNAL 0 0 0  " | wc -l)
