@@ -10,7 +10,7 @@ export ASPERA_DESTINATION="ega-box-TODO@fasp.ega.ebi.ac.uk:/."
 # The script will automatically search for the .md5, .gpg and .gpg.md5 files
 # (i.e. Use the same fileList as for starting the encryption)
 #
-source ./util.sh;
+source ${BASH_SOURCE%/*}/util.sh;
 OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
