@@ -1,0 +1,23 @@
+#
+# ASPERA settings for TODO-PROJECT
+#
+# project-specific settings for aspera uploads .
+#
+# TO LOAD THIS into your current environment, type in your current terminal
+#   source aspera_env.conf
+#
+# NB: MUST use "source", otherwise the settings are cleaned up again immediately
+# With "source", they survive in your (SSH) session until logout
+#
+
+# which EGA submission box?
+export ASPERA_USER="ega-box-TODO"
+export ASPERA_SCP_PASS="TODO"
+
+
+# EBI-specific, probably doesn't have to change
+#   unless you upload to somewhere not-EGA.
+export ASPERA_HOST="fasp.ega.ebi.ac.uk"
+export ASPERA_FOLDER="."
+
+echo "settings loaded for $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"

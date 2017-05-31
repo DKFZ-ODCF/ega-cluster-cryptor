@@ -1,23 +1,18 @@
 #!/bin/bash
 
-# TODO: extract to project-specif file, outside of repo
-export ASPERA_SCP_PASS="TODO";
-export ASPERA_DESTINATION="ega-box-TODO@fasp.ega.ebi.ac.uk:/."
-
-
 # check if user updated the aspera password and destination
 # TODO: this check will become more important once we extract these settings
 #   to an external, project-specific file
-if [ -z $ASPERA_SCP_PASS -o -z $ASPERA_DESTINATION ]; then
+if [ -z $ASPERA_SCP_PASS -o -z $ASPERA_HOST -o -z $ASPERA_USER ]; then
   >&2 echo "ERROR: Aspera environment variables not set! exiting!
-  (\$ASPERA_SCP_PASS and \$ASPERA_DESTINATION)"
+  (\$ASPERA_SCP_PASS, \$ASPERA_HOST and \$ASPERA_HOST)"
 fi
 
 # check if the aspera settings were updated, or contain the "TODO" marker
 # note that this substring scan requires the more advanced double-bracket test: [[
 #   this doesn't work in all shells, so we require bash
 # see also: http://timmurphy.org/2013/05/13/string-contains-substring-in-bash/
-if [[ ("$ASPERA_SCP_PASS" =~ "TODO") || ("$ASPERA_DESTINATION" =~ "TODO") ]]; then
+if [[ ("$ASPERA_SCP_PASS" =~ "TODO") || ("$ASPERA_USER" =~ "TODO") ]]; then
   >&2 echo "ERROR: Aspera environment variables still contain \"TODO\", exiting!
   Did you already change them to the correct box+password for this submission?"
 fi
@@ -51,10 +46,21 @@ while read -r UNENCRYPTED; do
   done
 done < "$FILE_LIST"
 
-# Actually upload all files
-# TODO: ascp has a --file-list=$FILE option, maybe better?
-#   A single session with multiple files saves a lot of restarting/handshaking
-#   Especially for tiny-tiny md5sum files...
-while read -r FILE; do
-  ascp -k2 -Q -l100M -L $WORKDIR $FILE $ASPERA_DESTINATION
-done < "$UPLOAD_LIST"
+
+# Aspera upload:
+#  -k2           --> set resume-mode to "attributes plus sparse file checksum"
+#  --policy=fair --> try max data rate, but back off gently if congestion noticed (formerly -Q)
+#  -l            --> max/target transfer rate (M --> Mbit/s)
+#  -m 0          --> minimum transfer rate
+#  -L .          --> output logs to local working dir
+#  --file-list   --> list of files to upload this session, one path per line
+#  --mode=send   --> the files in file-list should be sent TO the destination, not fetched
+#
+# more details:
+#   http://download.asperasoft.com/download/docs/ascp/3.0/html/index.html
+#
+ascp \
+  -k2 --policy=fair  -l 100M -m 0 \
+  -L . \
+  --file-list="$UPLOAD_LIST" --mode=send \
+  --host=$ASPERA_HOST --user=$ASPERA_USER $ASPERA_FOLDER
