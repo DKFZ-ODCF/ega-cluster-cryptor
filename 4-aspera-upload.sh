@@ -6,6 +6,7 @@
 if [ -z $ASPERA_SCP_PASS -o -z $ASPERA_HOST -o -z $ASPERA_USER ]; then
   >&2 echo "ERROR: Aspera environment variables not set! exiting!
   (\$ASPERA_SCP_PASS, \$ASPERA_HOST and \$ASPERA_HOST)"
+  exit 1
 fi
 
 # check if the aspera settings were updated, or contain the "TODO" marker
@@ -15,6 +16,7 @@ fi
 if [[ ("$ASPERA_SCP_PASS" =~ "TODO") || ("$ASPERA_USER" =~ "TODO") ]]; then
   >&2 echo "ERROR: Aspera environment variables still contain \"TODO\", exiting!
   Did you already change them to the correct box+password for this submission?"
+  exit 1
 fi
 
 
