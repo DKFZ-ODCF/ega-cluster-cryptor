@@ -38,7 +38,7 @@ echo "using file-list: $FILE_LIST"
 # convert "raw" list of bamfiles to list of encrypted versions and checksums
 UPLOAD_LIST="_aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
 while read -r UNENCRYPTED; do
-  for EXTENSION in 'md5' 'gpg' 'gpg.md5'; do
+  for EXTENSION in 'md5' 'gpg.md5' 'gpg'; do
     FILE="$UNENCRYPTED.$EXTENSION"
     if [ -e "$FILE" ]; then
       echo "$FILE" >> "$UPLOAD_LIST"
