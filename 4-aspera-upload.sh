@@ -35,19 +35,31 @@ verify_fileList "$FILE_LIST"
 echo "using file-list: $FILE_LIST"
 
 
-# convert "raw" list of bamfiles to list of encrypted versions and checksums
-UPLOAD_LIST="_aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
-while read -r UNENCRYPTED; do
-  for EXTENSION in 'md5' 'gpg.md5' 'gpg'; do
-    FILE="$UNENCRYPTED.$EXTENSION"
-    if [ -e "$FILE" ]; then
-      echo "$FILE" >> "$UPLOAD_LIST"
-    else
-      >&2 echo "WARNING: Expected file wasn't there: $FILE"
-    fi
-  done
-done < "$FILE_LIST"
+# If we have a time-stamped file-list, use/create an upload-file with the matching time
+#   otherwise, generate a new one with the current time.
+if [[ "$FILE_LIST" =~ (^.*/)?fileList_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}:[0-9]{2}:[0-9]{2}.txt ]]; then
+  UPLOAD_LIST=$(echo "$FILE_LIST" | sed s/fileList_/_aspera-upload_/)
+else
+  UPLOAD_LIST="_aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
+fi
 
+# See if the upload-list already exists, if not, create and populate it:
+# convert list of unencrypted files to list of encrypted versions plus checksums
+if [ ! -e $UPLOAD_LIST ]; then
+  echo "creating new upload list: $UPLOAD_LIST"
+  while read -r UNENCRYPTED; do
+    for EXTENSION in 'md5' 'gpg.md5' 'gpg'; do
+      FILE="$UNENCRYPTED.$EXTENSION"
+      if [ -e "$FILE" ]; then
+        echo "$FILE" >> "$UPLOAD_LIST"
+      else
+        >&2 echo "WARNING: Expected file wasn't there: $FILE"
+      fi
+    done
+  done < "$FILE_LIST"
+else
+  echo "continuing with upload list: $UPLOAD_LIST"
+fi
 
 # Aspera upload:
 #  -k2           --> set resume-mode to "attributes plus sparse file checksum"
