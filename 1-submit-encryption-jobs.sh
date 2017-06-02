@@ -28,5 +28,5 @@ for FULL_FILE in $unencryptedFiles
 do
     # prepend filename before qsub job-id output (intentionally no newline!)
     printf "%-29s " $FULL_FILE
-    qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ${BASH_SOURCE%/*}/ega-encryption.sh
+    qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh
 done
