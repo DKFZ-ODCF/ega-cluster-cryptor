@@ -37,9 +37,8 @@ cat $FILE | tee >(
   | md5sum > $FILE.md5.partial; \
   echo "EXTERNAL ${PIPESTATUS[*]}" > $EXTERNAL
 
-# store pipestatus into a file
+# store combined pipestatus into a file, delete intermediate tempfiles
 echo "$(cat $INTERNAL)  $(cat $EXTERNAL)  $FILE" > $TOTAL_PIPESTATUS
-# delete pipestatus temp files
 rm $INTERNAL $EXTERNAL
 
 # we're done. Check if everything worked without problems, and
@@ -49,7 +48,7 @@ if [ "$(cat $TOTAL_PIPESTATUS)" == "INTERNAL 0 0 0  EXTERNAL 0 0 0  $FILE" ]; th
   mv "$FILE.gpg.partial"     "$FILE.gpg"
   mv "$FILE.gpg.md5.partial" "$FILE.gpg.md5"
   mv "$FILE.md5.partial"     "$FILE.md5"
-  rm $TOTAL_PIPESTATUS
+  rm $TOTAL_PIPESTATUS # not needed if everything worked :-)
 else
   # failure! at least one pipe broke :-(
   mv "$FILE.gpg.partial"     "$FILE.gpg.failed"
