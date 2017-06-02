@@ -58,3 +58,7 @@ else
   # leave $TOTAL_PIPESTATUS around, in case people wish to debug.
   exit 1 # signal non-success to PBS
 fi
+
+#replace '-' label (STDIN) in md5 files with the actual file-name used
+sed -i s/-/$FILE.gpg/ "$FILE.gpg.md5"
+sed -i s/-/$FILE/ "$FILE.md5"
