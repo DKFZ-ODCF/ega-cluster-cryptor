@@ -18,13 +18,13 @@
 
 cd $WORKDIR
 
+# extract filename from full path
+FILE=$(basename $FULL_FILE)
+
 # set temp files
 INTERNAL=$(mktemp --suffix="-encryption-pipestatus-internal")
 EXTERNAL=$(mktemp --suffix="-encryption-pipestatus-external")
-TOTAL_PIPESTATUS=$($WORKDIR/$FILE.pipestatus)
-
-# extract filename from full path
-FILE=$(basename $FULL_FILE)
+TOTAL_PIPESTATUS="$FILE.pipestatus"
 
 # process file
 #  Put all results into .partial files first, to signal that they are incomplete
