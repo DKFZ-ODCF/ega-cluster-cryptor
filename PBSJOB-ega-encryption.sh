@@ -37,6 +37,10 @@ cat $FILE | tee >(
   | md5sum > $FILE.md5.partial; \
   echo "EXTERNAL ${PIPESTATUS[*]}" > $EXTERNAL
 
+#replace '-' label (STDIN) in md5 files with the actual file-name used
+sed -i s/-/$FILE.gpg/ "$FILE.gpg.md5.partial"
+sed -i s/-/$FILE/ "$FILE.md5.partial"
+
 # store combined pipestatus into a file, delete intermediate tempfiles
 echo "$(cat $INTERNAL)  $(cat $EXTERNAL)  $FILE" > $TOTAL_PIPESTATUS
 rm $INTERNAL $EXTERNAL
@@ -57,7 +61,3 @@ else
   # leave $TOTAL_PIPESTATUS around, in case people wish to debug.
   exit 1 # signal non-success to PBS
 fi
-
-#replace '-' label (STDIN) in md5 files with the actual file-name used
-sed -i s/-/$FILE.gpg/ "$FILE.gpg.md5"
-sed -i s/-/$FILE/ "$FILE.md5"
