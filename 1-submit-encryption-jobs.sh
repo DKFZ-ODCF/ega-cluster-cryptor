@@ -23,10 +23,17 @@ unencryptedFiles=$(\
    <(find $(pwd) -type f -name "*.gpg" | sed "s/\.gpg//g" | sort) \
 )
 
+SUBMITLOG="_submitted_jobs_$(date +%Y-%m-%d_%H:%M:%S)"
 WORKDIR=$(pwd)
 for FULL_FILE in $unencryptedFiles
 do
+  if [ ! -e "$FULL_FILE" ]; then
+    echo "WARNING: File not found: $FULL_FILE" | tee -a $SUBMITLOG
+  else
     # prepend filename before qsub job-id output (intentionally no newline!)
-    printf "%-29s " $FULL_FILE
-    qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh
+    printf "%-29s\t" $(basename $FULL_FILE) | tee -a $SUBMITLOG
+
+    # actual job submission
+    qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
+  fi
 done
