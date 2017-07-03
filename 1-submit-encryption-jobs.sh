@@ -34,6 +34,8 @@ do
     printf "%-29s\t" $(basename $FULL_FILE) | tee -a $SUBMITLOG
 
     # actual job submission
-    qsub -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
+    qsub \
+        -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR \
+        ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
   fi
 done
