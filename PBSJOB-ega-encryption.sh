@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Job Name
+# Job Name - can be set more-specific from qsub command
 #PBS -N ega-encryption.sh
 # cpu time
 #PBS -l walltime=08:00:00
