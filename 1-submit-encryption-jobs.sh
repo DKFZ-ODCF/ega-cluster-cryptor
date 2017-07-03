@@ -25,6 +25,11 @@ unencryptedFiles=$(\
 
 SUBMITLOG="_submitted_jobs_$(date +%Y-%m-%d_%H:%M:%S)"
 WORKDIR=$(pwd)
+JOBLOGDIR="$WORKDIR/cluster-logs"
+if [ ! -d "$JOBLOGDIR" ]; then
+  mkdir "$JOBLOGDIR"
+fi
+
 for FULL_FILE in $unencryptedFiles
 do
   if [ ! -e "$FULL_FILE" ]; then
@@ -38,6 +43,8 @@ do
     qsub \
         -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR \
         -N "ega-encryption-$SHORTNAME.sh" \
+        -e "$JOBLOGDIR" \
+        -o "$JOBLOGDIR" \
         ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
   fi
 done

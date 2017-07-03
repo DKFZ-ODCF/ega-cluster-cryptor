@@ -11,9 +11,9 @@
 #PBS -M ***REMOVED***
 # e-mail should be sent to the user when the job begins (b), ends (e) or aborts (a)
 #PBS -m ea
-# Define a file where stderr will be redirected to
+# Default folder for the error- and out-logs
+# (probably best to override this from the qsub command)
 #PBS -e /home/USERNAME/submission-logs
-# Define a file where stdout will be redirected to
 #PBS -o /home/USERNAME/submission-logs
 
 cd $WORKDIR
