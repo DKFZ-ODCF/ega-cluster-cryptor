@@ -42,7 +42,7 @@ do
     # actual job submission
     qsub \
         -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR \
-        -N "ega-encryption-$SHORTNAME.sh" \
+        -N "ega-encryption.sh - $SHORTNAME" \
         -e "$JOBLOGDIR" \
         -o "$JOBLOGDIR" \
         ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
