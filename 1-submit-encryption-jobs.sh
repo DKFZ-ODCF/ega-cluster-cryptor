@@ -23,15 +23,14 @@ unencryptedFiles=$(\
    <(find $(pwd) -type f -name "*.gpg" | sed "s/\.gpg//g" | sort) \
 )
 
-SUBMITLOG="_submitted_jobs_$(date +%Y-%m-%d_%H:%M:%S)"
 WORKDIR=$(pwd)
+SUBMITLOG="$WORKDIR/_submitted_jobs_"$(date +%Y-%m-%d_%H:%M:%S)
 JOBLOGDIR="$WORKDIR/cluster-logs"
 if [ ! -d "$JOBLOGDIR" ]; then
   mkdir "$JOBLOGDIR"
 fi
 
-for FULL_FILE in $unencryptedFiles
-do
+for FULL_FILE in $unencryptedFiles; do
   if [ ! -e "$FULL_FILE" ]; then
     echo "WARNING: File not found: $FULL_FILE" | tee -a $SUBMITLOG
   else
@@ -39,7 +38,7 @@ do
     # prepend filename before qsub job-id output (intentionally no newline!)
     printf "%-29s\t" $SHORTNAME | tee -a $SUBMITLOG
 
-    # actual job submission
+    # actual job submission, prints job-id
     qsub \
         -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR \
         -N "ega-encryption.sh - $SHORTNAME" \
