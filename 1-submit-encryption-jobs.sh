@@ -37,7 +37,7 @@ do
   else
     SHORTNAME=$(basename $FULL_FILE)
     # prepend filename before qsub job-id output (intentionally no newline!)
-    printf "%-29s\t$SHORTNAME" | tee -a $SUBMITLOG
+    printf "%-29s\t" $SHORTNAME | tee -a $SUBMITLOG
 
     # actual job submission
     qsub \
