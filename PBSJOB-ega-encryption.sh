@@ -3,7 +3,7 @@
 # Job Name - can be set more-specific from qsub command
 #PBS -N ega-encryption.sh
 # cpu time
-#PBS -l walltime=08:00:00
+#PBS -l walltime=08:00:00,mem=400MB
 # request 1 node
 #PBS -l nodes=1
 #PBS -A io_throttle
