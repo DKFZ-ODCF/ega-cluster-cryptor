@@ -17,6 +17,8 @@ verify_fileList "$FILE_LIST"
 echo "using file-list: $FILE_LIST"
 
 # Get files from file_list that DON'T have a corresponding .gpg file
+# TODO: when adapting FILE_LIST to have non-absolute paths, also adapt this spot
+# TODO: also subtract ".gpg.partial" files 
 unencryptedFiles=$(\
   comm -23 \
    <(cat "$FILE_LIST" | sort) \

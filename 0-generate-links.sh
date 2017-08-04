@@ -29,6 +29,8 @@ sh $LINK_SCRIPT;
 echo
 
 #create list of all links in folder
+# TODO: make emit non-absolute paths
+# TODO: maybe only list files that we linked? (For easier handling of batches)
 ALL_LINKS="fileList_$DATE.txt"
 find `pwd` -type l > $ALL_LINKS
 
