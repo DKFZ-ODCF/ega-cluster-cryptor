@@ -4,7 +4,7 @@
 #
 # This script will automatically find the most-recent "fileList*.txt" file and process files therein.
 # If you wish to use a different fileList, you can specify this as a command line argument:
-#   2-encryption-pbs.sh your-fileList.txt
+#   1-submit-encryption-jobs.sh your-fileList.txt
 
 # find wherever this script is, and load the util library next to it
 source ${BASH_SOURCE%/*}/util.sh
