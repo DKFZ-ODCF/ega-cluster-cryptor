@@ -62,19 +62,23 @@ else
 fi
 
 # Aspera upload:
+# These policies in line with EGA recommendations as of 2017-08-04:
+#   https://ega-archive.org/submission/tools/ftp-aspera#UsingAspera
+# More details on the parameters:
+#   http://download.asperasoft.com/download/docs/ascp/3.0/html/index.html
+#
 #  -k2           --> set resume-mode to "attributes plus sparse file checksum"
 #  --policy=fair --> try max data rate, but back off gently if congestion noticed (formerly -Q)
+#  -T            --> disable encryption for better throughput; the transferred files are already gpg-encrypted
 #  -l            --> max/target transfer rate (M --> Mbit/s)
 #  -m 0          --> minimum transfer rate
 #  -L .          --> output logs to local working dir
 #  --file-list   --> list of files to upload this session, one path per line
 #  --mode=send   --> the files in file-list should be sent TO the destination, not fetched
 #
-# more details:
-#   http://download.asperasoft.com/download/docs/ascp/3.0/html/index.html
-#
 ascp \
-  -k2 --policy=fair  -l 100M -m 0 \
+  -k2 --policy=fair -l 300M -m 0 \
+  -T
   -L $(pwd) \
   --file-list="$UPLOAD_LIST" --mode=send \
-  --host=$ASPERA_HOST --user=$ASPERA_USER $ASPERA_FOLDER
+  --host=$ASPERA_HOST -P33001 --user=$ASPERA_USER $ASPERA_FOLDER
