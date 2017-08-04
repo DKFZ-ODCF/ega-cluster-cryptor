@@ -1,11 +1,10 @@
 #!/bin/bash
 
 # check if user updated the aspera password and destination
-# TODO: this check will become more important once we extract these settings
-#   to an external, project-specific file
 if [ -z $ASPERA_SCP_PASS -o -z $ASPERA_HOST -o -z $ASPERA_USER ]; then
-  >&2 echo "ERROR: Aspera environment variables not set! exiting!
-  (\$ASPERA_SCP_PASS, \$ASPERA_HOST and \$ASPERA_HOST)"
+  >&2 echo 'ERROR: Aspera environment variables not set! exiting!
+  (variable names: $ASPERA_SCP_PASS, $ASPERA_HOST and $ASPERA_USER)
+  did you `source` the correct aspera-env file?'
   exit 1
 fi
 
@@ -32,7 +31,8 @@ OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
 verify_fileList "$FILE_LIST"
 
-echo "using file-list: $FILE_LIST"
+echo "using file-list: $FILE_LIST
+Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
 
 
 # If we have a time-stamped file-list, use/create an upload-file with the matching time
