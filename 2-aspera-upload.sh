@@ -20,16 +20,16 @@ fi
 
 
 # Get list of ToDo files
-# Either most-recent fileList*.txt, OR whatever the user wants
+# Either most-recent filelist*.txt, OR whatever the user wants
 #
 # This should be the list of UNencrypted files, without any .gpg or .md5 extensions
 # The script will automatically search for the .md5, .gpg and .gpg.md5 files
-# (i.e. Use the same fileList as for starting the encryption)
+# (i.e. Use the same filelist as for starting the encryption)
 #
 source ${BASH_SOURCE%/*}/util.sh;
 OVERRIDE_FILE="$1"
-FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
-verify_fileList "$FILE_LIST"
+FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
+verify_filelist "$FILE_LIST"
 
 echo "using file-list: $FILE_LIST
 Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
@@ -37,8 +37,8 @@ Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
 
 # If we have a time-stamped file-list, use/create an upload-file with the matching time
 #   otherwise, generate a new one with the current time.
-if [[ "$FILE_LIST" =~ (^.*/)?fileList[-_] ]]; then
-  UPLOAD_LIST=$(echo "$FILE_LIST" | sed s/fileList/_aspera-upload/)
+if [[ "$FILE_LIST" =~ (^.*/)?filelist[-_] ]]; then
+  UPLOAD_LIST=$(echo "$FILE_LIST" | sed s/filelist/_aspera-upload/)
 else
   UPLOAD_LIST="_aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
 fi
