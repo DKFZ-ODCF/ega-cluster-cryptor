@@ -30,20 +30,19 @@ TOTAL_PIPESTATUS="$FILE.pipestatus"
 #  Put all results into .partial files first, to signal that they are incomplete
 cat $FILE | tee >(
     gpg -e --always-trust -r EGA_Public_key | tee \
-        $FILE.gpg.partial \
-        | md5sum > $FILE.gpg.md5.partial; \
-    echo "INTERNAL ${PIPESTATUS[*]}" > $INTERNAL \
+        "$FILE.gpg.partial" \
+        | md5sum > "$FILE.gpg.md5.partial"; \
+    echo "INTERNAL ${PIPESTATUS[*]}" > "$INTERNAL" \
   ) \
   | md5sum > $FILE.md5.partial; \
-  echo "EXTERNAL ${PIPESTATUS[*]}" > $EXTERNAL
+  echo "EXTERNAL ${PIPESTATUS[*]}" > "$EXTERNAL"
+# store combined pipestatus into a file, delete intermediate tempfiles
+echo "$(cat $INTERNAL)  $(cat $EXTERNAL)  $FILE" > "$TOTAL_PIPESTATUS"
+rm "$INTERNAL" "$EXTERNAL"
 
 #replace '-' label (STDIN) in md5 files with the actual file-name used
 sed -i s/-/$FILE.gpg/ "$FILE.gpg.md5.partial"
-sed -i s/-/$FILE/ "$FILE.md5.partial"
-
-# store combined pipestatus into a file, delete intermediate tempfiles
-echo "$(cat $INTERNAL)  $(cat $EXTERNAL)  $FILE" > $TOTAL_PIPESTATUS
-rm $INTERNAL $EXTERNAL
+sed -i s/-/$FILE/     "$FILE.md5.partial"
 
 # we're done. Check if everything worked without problems, and
 # rename our .partial files accordingly
@@ -52,7 +51,7 @@ if [ "$(cat $TOTAL_PIPESTATUS)" == "INTERNAL 0 0 0  EXTERNAL 0 0 0  $FILE" ]; th
   mv "$FILE.gpg.partial"     "$FILE.gpg"
   mv "$FILE.gpg.md5.partial" "$FILE.gpg.md5"
   mv "$FILE.md5.partial"     "$FILE.md5"
-  rm $TOTAL_PIPESTATUS # not needed if everything worked :-)
+  rm "$TOTAL_PIPESTATUS" # not needed if everything worked :-)
 else
   # failure! at least one pipe broke :-(
   mv "$FILE.gpg.partial"     "$FILE.gpg.failed"
