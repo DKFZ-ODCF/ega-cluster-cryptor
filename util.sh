@@ -5,7 +5,7 @@ get_most_recent_filelist() {
   echo $(ls -t filelist*.txt | head -n1)
 }
 
-# usage: FILE_LIST=get_existing_file_list(OPTIONAL_COMMAND_LINE_OVERRIDE)
+# usage: FILE_LIST=get_default_or_override_filelist(COMMAND_LINE_OVERRIDE)
 get_default_or_override_filelist() {
   # default: use most-recent filelist in current working directory
   FILE_LIST=$(get_most_recent_filelist)
