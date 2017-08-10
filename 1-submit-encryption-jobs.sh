@@ -18,11 +18,14 @@ echo "using file-list: $FILE_LIST"
 
 # Get files from file_list that DON'T have a corresponding .gpg file
 # TODO: when adapting FILE_LIST to have non-absolute paths, also adapt this spot
-# TODO: also subtract ".gpg.partial" files 
 unencryptedFiles=$(\
   comm -23 \
-   <(cat "$FILE_LIST" | sort) \
-   <(find $(pwd) -type f -name "*.gpg" | sed "s/\.gpg//g" | sort) \
+   <(sort "$FILE_LIST") \
+   <( \
+      find $(pwd) -type f \( -name "*.gpg" -or -name "*.gpg.partial" \) \
+      | sed -E "s/\.gpg(.partial)?//g" \
+      | sort \
+    ) \
 )
 
 WORKDIR=$(pwd)
