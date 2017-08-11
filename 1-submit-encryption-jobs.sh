@@ -42,11 +42,10 @@ for FULL_FILE in $unencryptedFiles; do
     SHORTNAME=$(basename $FULL_FILE)
     # prepend filename before qsub job-id output (intentionally no newline!)
     printf "%-29s\t" $SHORTNAME | tee -a $SUBMITLOG
-
     # actual job submission, prints job-id
     qsub \
         -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR \
-        -N "ega-encryption.sh - $SHORTNAME" \
+        -N "ega-encryption - $SHORTNAME" \
         -e "$JOBLOGDIR" \
         -o "$JOBLOGDIR" \
         ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
