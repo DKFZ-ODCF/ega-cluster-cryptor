@@ -45,7 +45,7 @@ for FULL_FILE in $unencryptedFiles; do
     # actual job submission, prints job-id
     qsub \
         -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR \
-        -N "ega-encryption - $SHORTNAME" \
+        -N "ega-encryption-$SHORTNAME" \
         -e "$JOBLOGDIR" \
         -o "$JOBLOGDIR" \
         ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
