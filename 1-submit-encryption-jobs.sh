@@ -2,17 +2,17 @@
 
 # INFO: if you want to restart the encryption for a file, delete all the corresponding *.md5 and *.gpg files
 #
-# This script will automatically find the most-recent "fileList*.txt" file and process files therein.
-# If you wish to use a different fileList, you can specify this as a command line argument:
-#   1-submit-encryption-jobs.sh your-fileList.txt
+# This script will automatically find the most-recent "filelist*.txt" file and process files therein.
+# If you wish to use a different filelist, you can specify this as a command line argument:
+#   1-submit-encryption-jobs.sh your-filelist.txt
 
 # find wherever this script is, and load the util library next to it
 source ${BASH_SOURCE%/*}/util.sh
 
 # Get default, latest input file, OR whatever the user wants
 OVERRIDE_FILE="$1"
-FILE_LIST=$(get_default_or_override_fileList "$OVERRIDE_FILE");
-verify_fileList "$FILE_LIST"
+FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
+verify_filelist "$FILE_LIST"
 
 echo "using file-list: $FILE_LIST"
 
