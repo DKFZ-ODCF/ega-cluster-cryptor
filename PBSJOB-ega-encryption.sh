@@ -7,10 +7,6 @@
 # request 1 node
 #PBS -l nodes=1
 #PBS -A io_throttle
-# Default folder for the error- and out-logs
-# (probably best to override this from the qsub command)
-#PBS -e /home/USERNAME/submission-logs
-#PBS -o /home/USERNAME/submission-logs
 
 cd $WORKDIR
 
