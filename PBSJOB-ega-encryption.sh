@@ -7,10 +7,6 @@
 # request 1 node
 #PBS -l nodes=1
 #PBS -A io_throttle
-# e-mail address where PBS messages will be sent to
-#PBS -M ***REMOVED***
-# e-mail should be sent to the user when the job begins (b), ends (e) or aborts (a)
-#PBS -m ea
 # Default folder for the error- and out-logs
 # (probably best to override this from the qsub command)
 #PBS -e /home/USERNAME/submission-logs
