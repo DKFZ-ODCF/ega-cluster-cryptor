@@ -39,7 +39,20 @@ for FULL_FILE in $unencryptedFiles; do
   if [ ! -e "$FULL_FILE" ]; then
     echo "WARNING: File not found: $FULL_FILE" | tee -a $SUBMITLOG
   else
+    # readable label, without the full absolute path
     SHORTNAME=$(basename $FULL_FILE)
+
+    # for smaller files: request less walltime so we get into the "short" queue (faster processing!)
+    # filesize limit at 30G, which was experimentally established* to take ~45 minutes.
+    #   * date of experiment: 2017-09-04, using pbs3/4 cluster
+    SMALL_LIMIT="32212254720" # 30 x (1024^3) = 30G;
+    FILESIZE=$(stat -c '%s' $(readlink -f $FULL_FILE))
+	if [ $FILESIZE -le $SMALL_LIMIT ]; then
+      REQ_WALLTIME="01:00:00"
+    else
+      REQ_WALLTIME="08:00:00"
+    fi
+
     # prepend filename before qsub job-id output (intentionally no newline!)
     printf "%-29s\t" $SHORTNAME | tee -a $SUBMITLOG
     # actual job submission, prints job-id
@@ -48,6 +61,7 @@ for FULL_FILE in $unencryptedFiles; do
         -N "ega-encryption-$SHORTNAME" \
         -e "$JOBLOGDIR" \
         -o "$JOBLOGDIR" \
+        -l "walltime=$REQ_WALLTIME" \
         ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
   fi
 done
