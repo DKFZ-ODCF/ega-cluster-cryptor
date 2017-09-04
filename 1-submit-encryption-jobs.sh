@@ -42,15 +42,20 @@ for FULL_FILE in $unencryptedFiles; do
     # readable label, without the full absolute path
     SHORTNAME=$(basename $FULL_FILE)
 
-    # for smaller files: request less walltime so we get into the "short" queue (faster processing!)
-    # filesize limit at 30G, which was experimentally established* to take ~45 minutes.
-    #   * date of experiment: 2017-09-04, using pbs3/4 cluster
-    SMALL_LIMIT="32212254720" # 30 x (1024^3) = 30G;
+    # for smaller files: request less walltime so we get into the "fast" or "medium" queue
+    # (faster processing!)
+    # limits were experimentally established on 2017-09-04, using pbs3/4 cluster
+    # results: very linear speed of ~5G/7minutes
+    # The below limits keep some margin.
+    FAST_LIMIT="10737418240"   # 10 x (1024^3) = 10G ~  14 minutes, queue limit  20 min.
+    MEDIUM_LIMIT="85899345920" # 80 x (1024^3) = 80G ~ 112 minutes, queue limit 120 min.
     FILESIZE=$(stat -c '%s' $(readlink -f $FULL_FILE))
-	if [ $FILESIZE -le $SMALL_LIMIT ]; then
-      REQ_WALLTIME="01:00:00"
+    if [ $FILESIZE -le $FAST_LIMIT ]; then
+      REQ_WALLTIME="00:19:59"
+    elif [ $FILESIZE -le $MEDIUM_LIMIT ]; then
+      REQ_WALLTIME="01:59:59"
     else
-      REQ_WALLTIME="08:00:00"
+      REQ_WALLTIME="11:59:59"
     fi
 
     # prepend filename before qsub job-id output (intentionally no newline!)
