@@ -13,11 +13,11 @@
 #
 # verify that we are being called by "source"
 #   based loosely on https://stackoverflow.com/questions/2683279/how-to-detect-if-a-script-is-being-sourced
-if [[ $0 != 'bash' ]]; then
+#   important: use =~ matching to match both login-shells ("-bash") and normal shells ("bash")
+if [[ ! $0 =~ 'bash' ]]; then
   echo "WRONG INVOCATION! load this file with 'source $BASH_SOURCE'"
   echo "  otherwise the settings won't 'stick around' in your session"
   echo "settings NOT loaded"
-  exit 1
 
 else
   # which EGA submission box?
