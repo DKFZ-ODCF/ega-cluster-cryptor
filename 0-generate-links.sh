@@ -18,7 +18,7 @@ DATE=$(date '+%Y-%m-%d_%H:%M:%S')
 
 # prepare soft links for all files in map-files.txt
 LINK_SCRIPT="_create_links-$DATE.sh"
-cat "$1" | awk -F ";" '{print "ln -s "$1" "$2}' > $LINK_SCRIPT
+sort "$1" | awk -F ";" '{print "ln -s "$1" "$2}' > $LINK_SCRIPT
 
 # print blank line, to highlight any errors the linking might produce
 # such as double file-names
