@@ -77,7 +77,7 @@ fi
 #  --mode=send   --> the files in file-list should be sent TO the destination, not fetched
 #
 ascp \
-  -k2 --policy=fair -l 300M -m 0 \
+  -k2 --policy=fair -l 100M -m 0 \
   -T
   -L $(pwd) \
   --file-list="$UPLOAD_LIST" --mode=send \
