@@ -6,6 +6,13 @@
 # If you wish to use a different filelist, you can specify this as a command line argument:
 #   1-submit-encryption-jobs.sh your-filelist.txt
 
+# Check if required EGA public key is known.
+gpg --list-keys EGA_Public_key >/dev/null 2>&1;
+if [ $? != 0 ]; then
+  echo "EGA public key not present in GPG key-ring. Cannot encrypt."
+  echo "  please install it using \`gpg --import EGA_public_key.gpg\`"
+fi
+
 # find wherever this script is, and load the util library next to it
 source ${BASH_SOURCE%/*}/util.sh
 
