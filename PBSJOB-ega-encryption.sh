@@ -20,7 +20,7 @@ TOTAL_PIPESTATUS="$FILE.pipestatus"
 
 # process file
 #  Put all results into .partial files first, to signal that they are incomplete
-cat $FILE | tee >(
+cat "$FILE" | tee >(
     gpg -e --always-trust -r EGA_Public_key | tee \
         "$FILE.gpg.partial" \
         | md5sum > "$FILE.gpg.md5.partial"; \
