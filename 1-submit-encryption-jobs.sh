@@ -23,17 +23,6 @@ verify_filelist "$FILE_LIST"
 
 echo "using file-list: $FILE_LIST"
 
-# Get files from file_list that DON'T have a corresponding .gpg file
-# TODO: when adapting FILE_LIST to have non-absolute paths, also adapt this spot
-unencryptedFiles=$(\
-  comm -23 \
-   <(sort "$FILE_LIST") \
-   <( \
-      find $(pwd) -type f \( -name "*.gpg" -or -name "*.gpg.partial" \) \
-      | sed -E "s/\.gpg(.partial)?//g" \
-      | sort \
-    ) \
-)
 
 WORKDIR="$(pwd)/files/"
 SUBMITLOG="$(pwd)/_submitted_jobs_"$(date +%Y-%m-%d_%H:%M:%S)
@@ -41,6 +30,20 @@ JOBLOGDIR="$(pwd)/cluster-logs"
 if [ ! -d "$JOBLOGDIR" ]; then
   mkdir "$JOBLOGDIR"
 fi
+
+
+# Get files from file_list that DON'T have a corresponding .gpg file
+# TODO: when adapting FILE_LIST to have non-absolute paths, also adapt this spot
+unencryptedFiles=$(\
+  comm -23 \
+   <(sort "$FILE_LIST") \
+   <( \
+      find $WORKDIR -type f \( -name "*.gpg" -or -name "*.gpg.partial" \) \
+      | sed -E "s/\.gpg(.partial)?//g" \
+      | sort \
+    ) \
+)
+
 
 for FULL_FILE in $unencryptedFiles; do
   if [ ! -e "$FULL_FILE" ]; then
