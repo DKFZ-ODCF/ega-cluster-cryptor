@@ -36,8 +36,8 @@ unencryptedFiles=$(\
 )
 
 WORKDIR="$(pwd)/files/"
-SUBMITLOG="$WORKDIR/_submitted_jobs_"$(date +%Y-%m-%d_%H:%M:%S)
-JOBLOGDIR="$WORKDIR/cluster-logs"
+SUBMITLOG="$(pwd)/_submitted_jobs_"$(date +%Y-%m-%d_%H:%M:%S)
+JOBLOGDIR="$(pwd)/cluster-logs"
 if [ ! -d "$JOBLOGDIR" ]; then
   mkdir "$JOBLOGDIR"
 fi
