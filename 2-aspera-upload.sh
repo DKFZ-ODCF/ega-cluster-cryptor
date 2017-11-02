@@ -78,7 +78,7 @@ fi
 #
 ascp \
   -k2 --policy=fair -l 100M -m 0 \
-  -T
+  -T \
   -L $(pwd) \
   --file-list="$UPLOAD_LIST" --mode=send \
   --host=$ASPERA_HOST -P33001 --user=$ASPERA_USER $ASPERA_FOLDER
