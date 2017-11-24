@@ -64,6 +64,7 @@ fi
 # Aspera upload:
 # These policies in line with EGA recommendations as of 2017-08-04:
 #   https://ega-archive.org/submission/tools/ftp-aspera#UsingAspera
+#   although the recommended transfer speed of "-l 300M" can be tuned
 # More details on the parameters:
 #   http://download.asperasoft.com/download/docs/ascp/3.0/html/index.html
 #
@@ -77,7 +78,7 @@ fi
 #  --mode=send   --> the files in file-list should be sent TO the destination, not fetched
 #
 ascp \
-  -k2 --policy=fair -l 100M -m 0 \
+  -k2 --policy=fair -l 300M -m 0 \
   -T \
   -L $(pwd) \
   --file-list="$UPLOAD_LIST" --mode=send \
