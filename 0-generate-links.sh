@@ -21,7 +21,9 @@ if [ ! -d 'files' ]; then
   mkdir 'files'
 fi
 LINK_SCRIPT="_create_links-$DATE.sh"
-sort "$1" | awk -F ";" '{ print "ln -s " $1 " files/" $2  }' > $LINK_SCRIPT
+ grep -v -e '^$' -e '^#' "$1" | \
+ sort | \
+ awk -F ";" '{ print "ln -s " $1 " files/" $2  }' > $LINK_SCRIPT
 
 # print blank line, to highlight any errors the linking might produce
 # such as double file-names
