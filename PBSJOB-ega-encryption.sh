@@ -16,6 +16,16 @@ ENCRYPTED_PARTIAL="$FILE.gpg.partial"
 ENCRYPTED_MD5_PARTIAL="$FILE.gpg.md5.partial"
 PLAIN_MD5_PARTIAL="$FILE.md5.partial"
 
+# double-check we're not accidentally encrypting this file already
+#   since output filenames are based on input filename, two concurrent
+#   encryption jobs will trash the output
+# Abort if we're the second one
+if [ -e "$ENCRYPTED_PARTIAL" -o -e "$ENCRYPTED_MD5_PARTIAL" -o -e "$PLAIN_MD5_PARTIAL" ]; then
+  >&2 echo "ABORT: partial files already present, encryption probably already running."
+  >&2 ls -alh "$ENCRYPTED_PARTIAL" "$ENCRYPTED_MD5_PARTIAL" "$PLAIN_MD5_PARTIAL"
+  exit 2
+fi
+
 # set temp files
 INTERNAL=$(mktemp --suffix="-encryption-pipestatus-internal")
 EXTERNAL=$(mktemp --suffix="-encryption-pipestatus-external")
