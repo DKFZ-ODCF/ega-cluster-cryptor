@@ -60,7 +60,7 @@ if [ ! -e $UPLOAD_LIST ]; then
   done < "$FILE_LIST"
 else
   UPLOADLIST_LINES=$( grep -v -e '^$' -e '^#' "$UPLOAD_LIST" | wc -l )
-  let "UPLOADLIST_TRIPLES = $LINES/3";
+  let "UPLOADLIST_TRIPLES = $UPLOADLIST_LINES/3";
   if [ "$UPLOADLIST_TRIPLES" -eq "$FILELIST_LINES" ]; then
     echo "continuing with upload list: $UPLOAD_LIST ($UPLOADLIST_LINES files = $UPLOADLIST_TRIPLES triples)"
   else
