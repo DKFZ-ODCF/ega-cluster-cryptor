@@ -31,7 +31,7 @@ OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
 verify_filelist "$FILE_LIST"
 
-echo "using file-list: $FILE_LIST
+echo "using file-list: $FILE_LIST (${ grep -v -e '^$' -e '^#' "$UPLOAD_LIST" | wc -l } files)
 Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
 
 
@@ -58,7 +58,7 @@ if [ ! -e $UPLOAD_LIST ]; then
     done
   done < "$FILE_LIST"
 else
-  echo "continuing with upload list: $UPLOAD_LIST"
+  echo "continuing with upload list: $UPLOAD_LIST (${ grep -v -e '^$' -e '^#' "$UPLOAD_LIST" | wc -l } files)"
 fi
 
 # Aspera upload:
