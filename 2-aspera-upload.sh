@@ -31,7 +31,8 @@ OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
 verify_filelist "$FILE_LIST"
 
-echo "using file-list: $FILE_LIST ($( grep -v -e '^$' -e '^#' "$FILE_LIST" | wc -l ) files)"
+FILELIST_LINES=$( grep -v -e '^$' -e '^#' "$FILE_LIST" | wc -l )
+echo "using file-list: $FILE_LIST ($FILELIST_LINES files)"
 echo "Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
 
 
@@ -58,7 +59,15 @@ if [ ! -e $UPLOAD_LIST ]; then
     done
   done < "$FILE_LIST"
 else
-  echo "continuing with upload list: $UPLOAD_LIST ($( grep -v -e '^$' -e '^#' "$UPLOAD_LIST" | wc -l ) files)"
+  UPLOADLIST_LINES=$( grep -v -e '^$' -e '^#' "$UPLOAD_LIST" | wc -l )
+  let "UPLOADLIST_TRIPLES = $LINES/3";
+  if [ "$UPLOADLIST_TRIPLES" -eq "$FILELIST_LINES" ]; then
+    echo "continuing with upload list: $UPLOAD_LIST ($UPLOADLIST_LINES files = $UPLOADLIST_TRIPLES triples)"
+  else
+    >&2 echo "ERROR: Upload list is too short compared to file list:
+      filelist \"$FILE_LIST\" is $FILELIST_LINES lines
+      expected an equal amount of triples in \"$UPLOAD_LIST\", but found $UPLOADLIST_TRIPLES ($UPLOADLIST_LINES lines)"
+  fi
 fi
 
 # Aspera upload:
