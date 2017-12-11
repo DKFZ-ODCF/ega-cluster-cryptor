@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# MAP_FILE contains a two-column format:
+# MAPFILE contains a two-column format:
 #   1) path to the original file to upload
 #   2) the alias/new name under which to upload it
 # It can be separated by either (multiple) tabs, or a semicolon ";"
@@ -22,13 +22,17 @@ fi
 
 # get date only once, so createlinks and filelist have the identical one, up to the second
 DATE=$(date '+%Y-%m-%d_%H:%M:%S')
-WORKDIR='files'
 
-# prepare soft links for all files in map-files.txt
+# prepare working subdir, so we don't clutter the current directory with dozens/hundreds of
+# links and encrypted result files (1 original + 1 encrypted + 2 checksums adds up fast!)
+WORKDIR='files'
 if [ ! -d "$WORKDIR" ]; then
   mkdir "$WORKDIR"
 fi
 
+# prepare soft links generation for all files in MAPFILE
+#   grep -> ignore empty and/or comment lines
+#   sed  -> canonicalize column separators for consumtion by awk
 FILE_LIST="filelist_$DATE.txt"
 LINK_SCRIPT="_create_links-$DATE.sh"
  grep -v -e '^$' -e '^#' "$MAPFILE" | \
