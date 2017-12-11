@@ -14,17 +14,30 @@ if [ ! -e "$1" ]; then
   exit 2
 fi
 
+# get date only once, so createlinks and filelist have the identical one, up to the second
 DATE=$(date '+%Y-%m-%d_%H:%M:%S')
+WORKDIR='files'
 
 # prepare soft links for all files in map-files.txt
-if [ ! -d 'files' ]; then
-  mkdir 'files'
+if [ ! -d "$WORKDIR" ]; then
+  mkdir "$WORKDIR"
 fi
+
+FILE_LIST="filelist_$DATE.txt"
 LINK_SCRIPT="_create_links-$DATE.sh"
  grep -v -e '^$' -e '^#' "$1" | \
  sed -r 's/\t+/;/' |
  sort | \
- awk -F ";" '{ print "ln -s " $1 " files/" $2  }' > $LINK_SCRIPT
+ awk -F ';' \
+   -v cwd="$(pwd)"  \
+   -v workdir="$WORKDIR" \
+   -v filelist="filelist_$DATE.txt" \
+   -v linkscript="$LINK_SCRIPT" \
+   '{
+      linkname = workdir "/" $2;
+      print cwd "/"          linkname > filelist;
+      print "ln -s " $1 "  " linkname > linkscript;
+    }'
 
 # print blank line, to highlight any errors the linking might produce
 # such as double file-names
@@ -36,9 +49,5 @@ echo
 
 #create list of all links in folder
 # TODO: make emit non-absolute paths
-# TODO: maybe only list files that we linked? (For easier handling of batches)
-ALL_LINKS="filelist_$DATE.txt"
-find `pwd` -type l > $ALL_LINKS
-
-echo "done! all links (including pre-existing ones):   $ALL_LINKS"
+echo "done! newly created links in:   $FILE_LIST"
 
