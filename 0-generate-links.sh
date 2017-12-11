@@ -1,16 +1,22 @@
 #!/bin/sh
 
+# MAP_FILE contains a two-column format:
+#   1) path to the original file to upload
+#   2) the alias/new name under which to upload it
+# It can be separated by either (multiple) tabs, or a semicolon ";"
+MAPFILE="$1"
+
 # first argument not empty?
-if [ -z "$1" ]; then
+if [ -z "$MAPFILE" ]; then
   echo "ERROR: Please specify a mapping file containing the files to link"
   echo "  Usage: $0 /PATH/TO/MAPPING/FILE.txt"
   exit 1
 fi
 
 # does filename of first argument exist?
-if [ ! -e "$1" ]; then
+if [ ! -e "$MAPFILE" ]; then
   echo "ERROR: Could not find specified mapping file to link:"
-  echo "  missing: $1"
+  echo "  missing: $MAPFILE"
   exit 2
 fi
 
@@ -25,7 +31,7 @@ fi
 
 FILE_LIST="filelist_$DATE.txt"
 LINK_SCRIPT="_create_links-$DATE.sh"
- grep -v -e '^$' -e '^#' "$1" | \
+ grep -v -e '^$' -e '^#' "$MAPFILE" | \
  sed -r 's/\t+/;/' |
  sort | \
  awk -F ';' \
