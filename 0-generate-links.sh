@@ -22,6 +22,7 @@ if [ ! -d 'files' ]; then
 fi
 LINK_SCRIPT="_create_links-$DATE.sh"
  grep -v -e '^$' -e '^#' "$1" | \
+ sed 's/\t+/;/' |
  sort | \
  awk -F ";" '{ print "ln -s " $1 " files/" $2  }' > $LINK_SCRIPT
 
