@@ -36,9 +36,8 @@ fi
 FILE_LIST="filelist_$DATE.txt"
 LINK_SCRIPT="_create_links-$DATE.sh"
  grep -v -e '^$' -e '^#' "$MAPFILE" | \
- sed -r 's/\t+/;/' |
  sort | \
- awk -F ';' \
+ awk -F '[;\t]+' \
    -v cwd="$(pwd)"  \
    -v workdir="$WORKDIR" \
    -v filelist="filelist_$DATE.txt" \
