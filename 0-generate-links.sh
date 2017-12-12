@@ -35,18 +35,16 @@ fi
 #   sed  -> canonicalize column separators for consumtion by awk
 FILE_LIST="filelist_$DATE.txt"
 LINK_SCRIPT="_create_links-$DATE.sh"
- grep -v -e '^$' -e '^#' "$MAPFILE" | \
- sort | \
- awk -F '[;\t]+' \
+awk -F '[;\t]+' \
    -v cwd="$(pwd)"  \
    -v workdir="$WORKDIR" \
    -v filelist="filelist_$DATE.txt" \
    -v linkscript="$LINK_SCRIPT" \
-   '{
+   '!( /^$/ || /^#/ ) {
       linkname = workdir "/" $2;
       print cwd "/"          linkname > filelist;
       print "ln -s " $1 "  " linkname > linkscript;
-    }'
+    }' "$MAPFILE"
 
 # print blank line, to highlight any errors the linking might produce
 # such as double file-names
