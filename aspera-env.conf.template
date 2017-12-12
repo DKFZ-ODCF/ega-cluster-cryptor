@@ -1,7 +1,7 @@
 #
 # ASPERA settings for TODO-PROJECT
 #
-# project-specific settings for aspera uploads .
+# project-specific settings for aspera uploads from tbi-transfer.
 #
 # TO LOAD THIS into your current environment, type in your current terminal
 #   source aspera_env.conf
