@@ -37,7 +37,7 @@ TOTAL_PIPESTATUS="$FILE.pipestatus"
 #  Put all results into .partial files first, to signal that they are incomplete
 #  We use piping and tee-ing extensively to ensure each disk-IO is only needed once
 #  and we can calculate the md5 checksums while we have it in memory "anyway".
-cat "$FILE" | tee >(
+tee < "$FILE" >(
     gpg -e --always-trust -r EGA_Public_key | tee \
         "$ENCRYPTED_PARTIAL" \
         | md5sum > "$ENCRYPTED_MD5_PARTIAL"; \
