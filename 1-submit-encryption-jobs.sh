@@ -14,7 +14,7 @@ if [ $? != 0 ]; then
 fi
 
 # find wherever this script is, and load the util library next to it
-source ${BASH_SOURCE%/*}/util.sh
+source "${BASH_SOURCE%/*}/util.sh"
 
 # Get default, latest input file, OR whatever the user wants
 OVERRIDE_FILE="$1"
@@ -38,7 +38,7 @@ unencryptedFiles=$(\
   comm -23 \
    <(sort "$FILE_LIST") \
    <( \
-      find $WORKDIR -type f \( -name "*.gpg" -or -name "*.gpg.partial" \) \
+      find "$WORKDIR" -type f \( -name "*.gpg" -or -name "*.gpg.partial" \) \
       | sed -E "s/\.gpg(.partial)?//g" \
       | sort \
     ) \
@@ -47,10 +47,10 @@ unencryptedFiles=$(\
 
 for FULL_FILE in $unencryptedFiles; do
   if [ ! -e "$FULL_FILE" ]; then
-    echo "WARNING: File not found: $FULL_FILE" | tee -a $SUBMITLOG
+    echo "WARNING: File not found: $FULL_FILE" | tee -a "$SUBMITLOG"
   else
     # readable label, without the full absolute path
-    SHORTNAME=$(basename $FULL_FILE)
+    SHORTNAME=$(basename "$FULL_FILE")
 
     # for smaller files: request less walltime so we get into the "fast" or "medium" queue
     # (faster processing!)
@@ -59,24 +59,24 @@ for FULL_FILE in $unencryptedFiles; do
     # The below limits keep some margin.
     FAST_LIMIT="10737418240"   # 10 x (1024^3) = 10G ~  14 minutes, queue limit  20 min.
     MEDIUM_LIMIT="85899345920" # 80 x (1024^3) = 80G ~ 112 minutes, queue limit 120 min.
-    FILESIZE=$(stat -c '%s' $(readlink -f $FULL_FILE))
-    if [ $FILESIZE -le $FAST_LIMIT ]; then
+    FILESIZE=$(stat -c '%s' "$(readlink -f "$FULL_FILE")")
+    if [ "$FILESIZE" -le $FAST_LIMIT ]; then
       REQ_WALLTIME="00:19:59"
-    elif [ $FILESIZE -le $MEDIUM_LIMIT ]; then
+    elif [ "$FILESIZE" -le $MEDIUM_LIMIT ]; then
       REQ_WALLTIME="01:59:59"
     else
       REQ_WALLTIME="11:59:59"
     fi
 
     # prepend filename before qsub job-id output (intentionally no newline!)
-    printf "%-29s\t" $SHORTNAME | tee -a $SUBMITLOG
+    printf "%-29s\t" "$SHORTNAME" | tee -a "$SUBMITLOG"
     # actual job submission, prints job-id
     qsub \
-        -v FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR \
+        -v FULL_FILE="$FULL_FILE",WORKDIR="$WORKDIR" \
         -N "ega-encryption-$SHORTNAME" \
         -e "$JOBLOGDIR" \
         -o "$JOBLOGDIR" \
         -l "walltime=$REQ_WALLTIME" \
-        ${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh | tee -a $SUBMITLOG
+        "${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
   fi
 done

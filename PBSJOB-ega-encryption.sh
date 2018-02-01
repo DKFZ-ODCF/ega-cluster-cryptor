@@ -10,10 +10,10 @@
 #PBS -l nodes=1
 #PBS -A io_throttle
 
-cd $WORKDIR
+cd "$WORKDIR"
 
 # extract filename from full path
-FILE=$(basename $FULL_FILE)
+FILE=$(basename "$FULL_FILE")
 ENCRYPTED_PARTIAL="$FILE.gpg.partial"
 ENCRYPTED_MD5_PARTIAL="$FILE.gpg.md5.partial"
 PLAIN_MD5_PARTIAL="$FILE.md5.partial"
@@ -46,17 +46,17 @@ cat "$FILE" | tee >(
   | md5sum > "$PLAIN_MD5_PARTIAL"; \
   echo "EXTERNAL ${PIPESTATUS[*]}" > "$EXTERNAL"
 # store combined pipestatus into a file, delete intermediate tempfiles
-echo "$(cat $INTERNAL)  $(cat $EXTERNAL)  $FILE" > "$TOTAL_PIPESTATUS"
+echo "$(cat "$INTERNAL")  $(cat "$EXTERNAL")  $FILE" > "$TOTAL_PIPESTATUS"
 rm "$INTERNAL" "$EXTERNAL"
 
 # replace '-' label (STDIN) in md5 files with the actual file-name used
 # to comply with the commonly accepted md5sum fileformat
-sed -i s/-/$FILE.gpg/ "$ENCRYPTED_MD5_PARTIAL"
-sed -i s/-/$FILE/     "$PLAIN_MD5_PARTIAL"
+sed -i s/-/"$FILE.gpg"/ "$ENCRYPTED_MD5_PARTIAL"
+sed -i s/-/"$FILE"/     "$PLAIN_MD5_PARTIAL"
 
 # we're done. Check if everything worked without problems, and
 # rename our .partial files accordingly
-if [ "$(cat $TOTAL_PIPESTATUS)" == "INTERNAL 0 0 0  EXTERNAL 0 0 0  $FILE" ]; then
+if [ "$(cat "$TOTAL_PIPESTATUS")" == "INTERNAL 0 0 0  EXTERNAL 0 0 0  $FILE" ]; then
   # success! no pipes broke :-D
   mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg"
   mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5"

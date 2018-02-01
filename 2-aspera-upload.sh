@@ -26,7 +26,7 @@ fi
 # The script will automatically search for the .md5, .gpg and .gpg.md5 files
 # (i.e. Use the same filelist as for starting the encryption)
 #
-source ${BASH_SOURCE%/*}/util.sh;
+source "${BASH_SOURCE%/*}/util.sh";
 OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
 verify_filelist "$FILE_LIST"
@@ -46,7 +46,7 @@ fi
 
 # See if the upload-list already exists, if not, create and populate it:
 # convert list of unencrypted files to list of encrypted versions plus checksums
-if [ ! -e $UPLOAD_LIST ]; then
+if [ ! -e "$UPLOAD_LIST" ]; then
   echo "creating new upload list: $UPLOAD_LIST"
   while read -r UNENCRYPTED; do
     for EXTENSION in 'md5' 'gpg.md5' 'gpg'; do
@@ -89,6 +89,6 @@ fi
 ascp \
   -k2 --policy=fair -l 300M -m 0 \
   -T \
-  -L $(pwd) \
+  -L "$(pwd)" \
   --file-list="$UPLOAD_LIST" --mode=send \
-  --host=$ASPERA_HOST -P33001 --user=$ASPERA_USER $ASPERA_FOLDER
+  --host="$ASPERA_HOST" -P33001 --user="$ASPERA_USER" "$ASPERA_FOLDER"

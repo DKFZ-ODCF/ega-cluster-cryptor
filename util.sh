@@ -15,20 +15,20 @@ get_default_or_override_filelist() {
     FILE_LIST=$1
   fi
 
-  echo $FILE_LIST
+  echo "$FILE_LIST"
 }
 
 verify_filelist() {
   FILE_LIST=$1;
 
-  if [ -z $FILE_LIST ]; then
+  if [ -z "$FILE_LIST" ]; then
     echo "ERROR: no file list to compare against! Please:
     a) specify one on the command line, or
     b) make sure there are 'filelist*.txt' in the CURRENT working dir for auto-detection"
     exit 102
   fi
 
-  if [ ! -e $FILE_LIST ]; then
+  if [ ! -e "$FILE_LIST" ]; then
     echo "ERROR: File not found: $FILE_LIST"
     exit 103
   fi

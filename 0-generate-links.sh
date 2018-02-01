@@ -50,7 +50,7 @@ awk -F '[;\t]+' \
 # such as double file-names
 echo
 # actually create softlinks
-sh $LINK_SCRIPT;
+sh "$LINK_SCRIPT";
 # and another blank line to "close"
 echo
 
