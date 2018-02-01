@@ -39,7 +39,7 @@ echo "Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
 # If we have a time-stamped file-list, use/create an upload-file with the matching time
 #   otherwise, generate a new one with the current time.
 if [[ "$FILE_LIST" =~ (^.*/)?filelist[-_] ]]; then
-  UPLOAD_LIST=$(echo "$FILE_LIST" | sed s/filelist/_aspera-upload/)
+  UPLOAD_LIST=${FILE_LIST//"filelist"/"_aspera-upload"}
 else
   UPLOAD_LIST="_aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
 fi
