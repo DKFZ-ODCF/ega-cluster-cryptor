@@ -31,7 +31,7 @@ OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
 verify_filelist "$FILE_LIST"
 
-FILELIST_LINES=$( grep -v -e '^$' -e '^#' "$FILE_LIST" | wc -l )
+FILELIST_LINES=$( grep -c -v -e '^$' -e '^#' "$FILE_LIST" )
 echo "using file-list: $FILE_LIST ($FILELIST_LINES files)"
 echo "Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
 
@@ -59,7 +59,7 @@ if [ ! -e "$UPLOAD_LIST" ]; then
     done
   done < "$FILE_LIST"
 else
-  UPLOADLIST_LINES=$( grep -v -e '^$' -e '^#' "$UPLOAD_LIST" | wc -l )
+  UPLOADLIST_LINES=$( grep -c -v -e '^$' -e '^#' "$UPLOAD_LIST" )
   let "UPLOADLIST_TRIPLES = $UPLOADLIST_LINES/3";
   if [ "$UPLOADLIST_TRIPLES" -eq "$FILELIST_LINES" ]; then
     echo "continuing with upload list: $UPLOAD_LIST ($UPLOADLIST_LINES files = $UPLOADLIST_TRIPLES triples)"
