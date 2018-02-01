@@ -2,7 +2,7 @@
 # general purpose, re-usable functions for the submission scripts
 
 get_most_recent_filelist() {
-  echo $(ls -t filelist*.txt | head -n1)
+  ls -t filelist*.txt | head -n1
 }
 
 # usage: FILE_LIST=get_default_or_override_filelist(COMMAND_LINE_OVERRIDE)
