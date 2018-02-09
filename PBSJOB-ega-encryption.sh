@@ -56,7 +56,7 @@ sed -i s/-/"$FILE"/     "$PLAIN_MD5_PARTIAL"
 
 # we're done. Check if everything worked without problems, and
 # rename our .partial files accordingly
-if [ "$(cat "$TOTAL_PIPESTATUS")" == "INTERNAL 0 0 0  EXTERNAL 0 0 0  $FILE" ]; then
+if [ "$(cat "$TOTAL_PIPESTATUS")" == "INTERNAL 0 0 0  EXTERNAL 0 0  $FILE" ]; then
   # success! no pipes broke :-D
   mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg"
   mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5"
