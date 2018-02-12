@@ -94,3 +94,7 @@ ascp \
   -L "$(pwd)" \
   --file-list="$UPLOAD_LIST" --mode=send \
   --host="$ASPERA_HOST" -P33001 --user="$ASPERA_USER" "$ASPERA_FOLDER"
+ASPERA_EXIT_STATUS=$?
+if [ $ASPERA_EXIT_STATUS -ne 0 ]; then
+  >&2 echo "WARNING: Aspera transfer exited with status $ASPERA_EXIT_STATUS";
+fi
