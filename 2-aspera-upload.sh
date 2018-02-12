@@ -18,6 +18,8 @@ if [[ ("$ASPERA_SCP_PASS" =~ "TODO") || ("$ASPERA_USER" =~ "TODO") ]]; then
   exit 1
 fi
 
+SPEED_LIMIT=${SPEED_LIMIT:-300M};
+
 
 # Get list of ToDo files
 # Either most-recent filelist*.txt, OR whatever the user wants
@@ -33,7 +35,7 @@ verify_filelist "$FILE_LIST"
 
 FILELIST_LINES=$( grep -c -v -e '^$' -e '^#' "$FILE_LIST" )
 echo "using file-list: $FILE_LIST ($FILELIST_LINES files)"
-echo "Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
+echo "Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER, limiting speed to ${SPEED_LIMIT}"
 
 
 # If we have a time-stamped file-list, use/create an upload-file with the matching time
@@ -87,7 +89,7 @@ fi
 #  --mode=send   --> the files in file-list should be sent TO the destination, not fetched
 #
 ascp \
-  -k2 --policy=fair -l 300M -m 0 \
+  -k2 --policy=fair -l $SPEED_LIMIT -m 0 \
   -T \
   -L "$(pwd)" \
   --file-list="$UPLOAD_LIST" --mode=send \
