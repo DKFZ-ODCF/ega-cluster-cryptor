@@ -27,7 +27,14 @@ else
   # EBI-specific, probably doesn't have to change
   #   unless you upload to somewhere not-EGA.
   export ASPERA_HOST="fasp.ega.ebi.ac.uk"
-  export ASPERA_FOLDER="."
+
+  # subfolder, if needed, inside the aspera box; default '.' (i.e. toplevel of box)
+  # but overridable by calling ASPERA_FOLDER="fooFolder/" source THIS_FILE
+  export ASPERA_FOLDER="${ASPERA_FOLDER:-.}"
+  # ensure (non-default) subfolders have a slash at the end
+  if [ ! $ASPERA_FOLDER == '.' ]; then
+    export ASPERA_FOLDER="${ASPERA_FOLDER/%\/}/"
+  fi
 
   echo "settings loaded for $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER"
 fi
