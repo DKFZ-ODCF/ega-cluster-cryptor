@@ -69,6 +69,7 @@ else
     >&2 echo "ERROR: Upload list is too short compared to file list:
       filelist \"$FILE_LIST\" is $FILELIST_LINES lines
       expected an equal amount of triples in \"$UPLOAD_LIST\", but found $UPLOADLIST_TRIPLES ($UPLOADLIST_LINES lines)"
+    exit 3
   fi
 fi
 
