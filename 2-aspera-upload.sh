@@ -97,5 +97,5 @@ ascp \
   --host="$ASPERA_HOST" -P33001 --user="$ASPERA_USER" "$ASPERA_FOLDER"
 ASPERA_EXIT_STATUS=$?
 if [ $ASPERA_EXIT_STATUS -ne 0 ]; then
-  >&2 echo "WARNING: Aspera transfer exited with status $ASPERA_EXIT_STATUS";
+  >&2 echo "$(date '+%Y-%m-%d_%H:%M:%S') WARNING: Aspera transfer exited with status $ASPERA_EXIT_STATUS";
 fi
