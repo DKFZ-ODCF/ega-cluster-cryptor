@@ -85,7 +85,7 @@ fi
 #  -T            --> disable encryption for better throughput; the transferred files are already gpg-encrypted
 #  -l            --> max/target transfer rate (M --> Mbit/s)
 #  -m 0          --> minimum transfer rate
-#  -L .          --> output logs to local working dir
+#  -L            --> output logs to local working dir
 #  --retry-timeout --> amount of seconds before completely aborting the transfer
 #  --file-list   --> list of files to upload this session, one path per line
 #  --mode=send   --> the files in file-list should be sent TO the destination, not fetched
