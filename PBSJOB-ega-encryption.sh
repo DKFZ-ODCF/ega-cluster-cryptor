@@ -66,6 +66,11 @@ else
   EXIT_STATUS=1 # signal non-success to PBS
   # keep TOTAL_PIPESTATUS for debugging.
 fi
+
+# give read-access to the entire project-group
+# (useful when encrypting is done by a different user than the upload
+chmod g+r "$ENCRYPTED_PARTIAL" "$ENCRYPTED_MD5_PARTIAL" "$PLAIN_MD5_PARTIAL"
+
 # move files to final location, depending on success-or-not
 mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg$STATUS_EXTENSION"
 mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5$STATUS_EXTENSION"
