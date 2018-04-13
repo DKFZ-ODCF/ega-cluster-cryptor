@@ -54,19 +54,22 @@ rm "$INTERNAL" "$EXTERNAL"
 sed -i s/-/"$FILE.gpg"/ "$ENCRYPTED_MD5_PARTIAL"
 sed -i s/-/"$FILE"/     "$PLAIN_MD5_PARTIAL"
 
-# we're done. Check if everything worked without problems, and
-# rename our .partial files accordingly
+# we're done. Check if everything worked without problems
 if [ "$(cat "$TOTAL_PIPESTATUS")" == "INTERNAL 0 0 0  EXTERNAL 0 0  $FILE" ]; then
   # success! no pipes broke :-D
-  mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg"
-  mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5"
-  mv "$PLAIN_MD5_PARTIAL"       "$FILE.md5"
+  STATUS_EXTENSION='' # blank means "success"
+  EXIT_STATUS=0
   rm "$TOTAL_PIPESTATUS" # not needed if everything worked :-)
 else
   # failure! at least one pipe broke :-(
-  mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg.failed"
-  mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5.failed"
-  mv "$PLAIN_MD5_PARTIAL"       "$FILE.md5.failed"
-  # leave $TOTAL_PIPESTATUS around, in case people wish to debug.
-  exit 1 # signal non-success to PBS
+  STATUS_EXTENSION=".failed"
+  EXIT_STATUS=1 # signal non-success to PBS
+  # keep TOTAL_PIPESTATUS for debugging.
 fi
+# move files to final location, depending on success-or-not
+mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg$STATUS_EXTENSION"
+mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5$STATUS_EXTENSION"
+mv "$PLAIN_MD5_PARTIAL"       "$FILE.md5$STATUS_EXTENSION"
+
+# let job managment know if we succeeded (or not)
+exit $EXIT_STATUS
