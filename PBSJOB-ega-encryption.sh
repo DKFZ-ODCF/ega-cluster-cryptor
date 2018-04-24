@@ -63,18 +63,18 @@ if [ "$(cat "$TOTAL_PIPESTATUS")" == "INTERNAL 0 0 0  EXTERNAL 0 0  $FILE" ]; th
 else
   # failure! at least one pipe broke :-(
   STATUS_EXTENSION=".failed"
-  EXIT_STATUS=1 # signal non-success to PBS
+  EXIT_STATUS=1 # signal non-success to job system
   # keep TOTAL_PIPESTATUS for debugging.
 fi
 
 # give read-access to the entire project-group
-# (useful when encrypting is done by a different user than the upload
+# (useful when encrypting is done by a different user than the upload)
 chmod g+r "$ENCRYPTED_PARTIAL" "$ENCRYPTED_MD5_PARTIAL" "$PLAIN_MD5_PARTIAL"
 
-# move files to final location, depending on success-or-not
+# move generated files to final location, depending on success-or-not
 mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg$STATUS_EXTENSION"
 mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5$STATUS_EXTENSION"
 mv "$PLAIN_MD5_PARTIAL"       "$FILE.md5$STATUS_EXTENSION"
 
-# let job managment know if we succeeded (or not)
+# let job managment system know if we succeeded (or not)
 exit $EXIT_STATUS
