@@ -14,7 +14,7 @@ if [ $? != 0 ]; then
 fi
 
 # find wherever this script is, and load the util library next to it
-source "${BASH_SOURCE%/*}/util.sh"
+source "$(dirname $BASH_SOURCE)/util.sh"
 
 # Get default, latest input file, OR whatever the user wants
 OVERRIDE_FILE="$1"

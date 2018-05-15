@@ -28,7 +28,7 @@ SPEED_LIMIT=${SPEED_LIMIT:-300M};
 # The script will automatically search for the .md5, .gpg and .gpg.md5 files
 # (i.e. Use the same filelist as for starting the encryption)
 #
-source "${BASH_SOURCE%/*}/util.sh";
+source "$(dirname $BASH_SOURCE)/util.sh"
 OVERRIDE_FILE="$1"
 FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
 verify_filelist "$FILE_LIST"
