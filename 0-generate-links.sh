@@ -30,9 +30,11 @@ if [ ! -d "$WORKDIR" ]; then
   mkdir "$WORKDIR"
 fi
 
-# prepare soft links generation for all files in MAPFILE
-#   grep -> ignore empty and/or comment lines
-#   sed  -> canonicalize column separators for consumtion by awk
+# Prepare soft links generation for all files in MAPFILE
+# We output this to a separate (temporary) script, and compile a list of all these links, for further processing.
+#   -F                -> accept either semicolon and/or tab as separator
+#   !( /^$/ || /^#/ ) -> ignore empty and/or comment lines
+# TODO: we should probably emit non-absolute paths, for more flexibility across machines
 FILE_LIST="filelist_$DATE.txt"
 LINK_SCRIPT="_create_links-$DATE.sh"
 awk -F '[;\t]+' \
@@ -54,7 +56,5 @@ sh "$LINK_SCRIPT";
 # and another blank line to "close"
 echo
 
-#create list of all links in folder
-# TODO: make emit non-absolute paths
 echo "done! newly created links in:   $FILE_LIST"
 
