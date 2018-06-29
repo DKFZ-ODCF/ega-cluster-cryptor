@@ -2,12 +2,16 @@
 
 # Job Name - can be set more-specific from qsub command
 #PBS  -N egacrypt
+#BSUB -J egacrypt
 # cpu time, when not overriden by submitter
 # memory is very generous, 98% of jobs consistently use 10.5 +- 0,2 MB of memory,
 #   but the remaining outliers jump to ~120MB; no idea why...
 #PBS -l walltime=08:00:00,mem=200MB
+#BSUB -W 08:00
+#BSUB -M 200MB
 # request 1 node
-#PBS -l nodes=1
+#PBS  -l nodes=1
+#BSUB -n 1
 
 set -eu
 
