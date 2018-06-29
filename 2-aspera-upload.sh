@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # check if user updated the aspera password and destination
 if [[ -z ${ASPERA_SCP_PASS}  || -z ${ASPERA_HOST} || -z ${ASPERA_USER} ]] ; then
   >&2 echo "ERROR: Aspera environment variables not set! exiting!

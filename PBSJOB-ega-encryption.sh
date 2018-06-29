@@ -10,6 +10,8 @@
 #PBS -l nodes=1
 #PBS -A io_throttle
 
+set -eu
+
 cd "$WORKDIR"
 
 # extract filename from full path

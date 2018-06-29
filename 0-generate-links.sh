@@ -6,6 +6,8 @@
 # It can be separated by either (multiple) tabs, or a semicolon ";"
 MAPFILE="$1"
 
+set -eu
+
 # first argument not empty?
 if [ -z "$MAPFILE" ]; then
   echo "ERROR: Please specify a mapping file containing the files to link"
