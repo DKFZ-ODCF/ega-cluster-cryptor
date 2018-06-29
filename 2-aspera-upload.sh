@@ -50,6 +50,12 @@ fi
 # convert list of unencrypted files to list of encrypted versions plus checksums
 if [ ! -e "$UPLOAD_LIST" ]; then
   echo "creating new upload list: $UPLOAD_LIST"
+  echo "" > "$UPLOAD_LIST"
+  if [ ! -e "$UPLOAD_LIST" ]; then
+    >&2 echo "ERROR: couldn't create \"$UPLOAD_LIST\", do you have write permission on the folder?"
+    exit 2
+  fi
+
   while read -r UNENCRYPTED; do
     for EXTENSION in 'md5' 'gpg.md5' 'gpg'; do
       FILE="$UNENCRYPTED.$EXTENSION"
