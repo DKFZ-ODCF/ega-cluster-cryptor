@@ -73,7 +73,7 @@ for FULL_FILE in $unencryptedFiles; do
     # actual job submission, prints job-id
     qsub \
         -v FULL_FILE="$FULL_FILE",WORKDIR="$WORKDIR" \
-        -N "ega-encryption-$SHORTNAME" \
+        -N "egacrypt-$SHORTNAME" \
         -e "$JOBLOGDIR" \
         -o "$JOBLOGDIR" \
         -l "walltime=$REQ_WALLTIME" \
