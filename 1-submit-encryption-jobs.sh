@@ -77,6 +77,6 @@ for FULL_FILE in $unencryptedFiles; do
         -e "$JOBLOGDIR" \
         -o "$JOBLOGDIR" \
         -l "walltime=$REQ_WALLTIME" \
-        "${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
+        < "${BASH_SOURCE%/*}/PBSJOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
   fi
 done
