@@ -6,7 +6,7 @@
 # If you wish to use a different filelist, you can specify this as a command line argument:
 #   1-submit-encryption-jobs.sh your-filelist.txt
 
-set -eu
+set -e
 
 # Check if required EGA public key is known.
 gpg --list-keys EGA_Public_key >/dev/null 2>&1;
