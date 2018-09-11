@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eu
+set -e
 
 # check if user updated the aspera password and destination
 if [[ -z ${ASPERA_SCP_PASS}  || -z ${ASPERA_HOST} || -z ${ASPERA_USER} ]] ; then
