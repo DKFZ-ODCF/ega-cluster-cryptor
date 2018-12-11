@@ -8,7 +8,6 @@
 #PBS -l walltime=08:00:00,mem=200MB
 # request 1 node
 #PBS -l nodes=1
-#PBS -A io_throttle
 
 set -eu
 
