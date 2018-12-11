@@ -11,8 +11,8 @@ set -e
 # Check if required EGA public key is known.
 gpg --list-keys EGA_Public_key >/dev/null 2>&1;
 if [ $? != 0 ]; then
-  echo "EGA public key not present in GPG key-ring. Cannot encrypt."
-  echo "  please install it using \`gpg --import EGA_public_key.gpg\`"
+  >&2 echo "EGA public key not present in GPG key-ring. Cannot encrypt."
+  >&2 echo "  please install it using \`gpg --import EGA_public_key.gpg\`"
 fi
 
 # find wherever this script is, and load the util library next to it
