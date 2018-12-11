@@ -37,8 +37,8 @@ if [ -e "$ENCRYPTED_PARTIAL" -o -e "$ENCRYPTED_MD5_PARTIAL" -o -e "$PLAIN_MD5_PA
 fi
 
 # set temp files
-INTERNAL=$(mktemp --suffix="-encryption-pipestatus-internal")
-EXTERNAL=$(mktemp --suffix="-encryption-pipestatus-external")
+INTERNAL=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-internal.tmp")
+EXTERNAL=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-external.tmp")
 TOTAL_PIPESTATUS="$FILE.pipestatus"
 
 # process file
