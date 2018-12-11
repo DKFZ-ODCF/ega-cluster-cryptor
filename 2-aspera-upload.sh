@@ -20,7 +20,7 @@ if [[ ("$ASPERA_SCP_PASS" =~ "TODO") || ("$ASPERA_USER" =~ "TODO") ]]; then
   exit 1
 fi
 
-SPEED_LIMIT=${SPEED_LIMIT:-300M};
+SPEED_LIMIT=${SPEED_LIMIT:-100M};
 
 
 # Get list of ToDo files
@@ -84,7 +84,7 @@ fi
 # Aspera upload:
 # These policies in line with EGA recommendations as of 2017-08-04:
 #   https://ega-archive.org/submission/tools/ftp-aspera#UsingAspera
-#   although the recommended transfer speed of "-l 300M" can be tuned
+#   although the recommended transfer speed of "-l 300M" can and should be tuned
 # More details on the parameters:
 #   http://download.asperasoft.com/download/docs/ascp/3.0/html/index.html
 #
