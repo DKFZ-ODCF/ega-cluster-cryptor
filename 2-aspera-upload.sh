@@ -97,6 +97,7 @@ fi
 #  --retry-timeout --> amount of seconds before completely aborting the transfer
 #  --file-list   --> list of files to upload this session, one path per line
 #  --mode=send   --> the files in file-list should be sent TO the destination, not fetched
+#  -d            --> create target dir on receiver
 #
 ascp \
   -k2 --policy=fair -l $SPEED_LIMIT -m 0 \
@@ -104,6 +105,7 @@ ascp \
   -L "$(pwd)" \
   --retry-timeout=1800 \
   --file-list="$UPLOAD_LIST" --mode=send \
+  -d \
   --host="$ASPERA_HOST" -P33001 --user="$ASPERA_USER" "$ASPERA_FOLDER"
 ASPERA_EXIT_STATUS=$?
 if [ $ASPERA_EXIT_STATUS -ne 0 ]; then
