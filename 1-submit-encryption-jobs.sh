@@ -71,7 +71,7 @@ for FULL_FILE in $unencryptedFiles; do
     fi
 
     # prepend filename before qsub job-id output (intentionally no newline!)
-    printf "%-29s\t" "$SHORTNAME" | tee -a "$SUBMITLOG"
+    printf "%-29s\t%s\t" "$SHORTNAME" "$REQ_WALLTIME" | tee -a "$SUBMITLOG"
     # actual job submission, prints job-id
     qsub \
         -v FULL_FILE="$FULL_FILE",WORKDIR="$WORKDIR" \
