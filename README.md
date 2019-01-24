@@ -1,9 +1,11 @@
-=== Cluster-based EGA Cryptor ===
+# Cluster-based EGA Cryptor
 
 This collection of shell scripts implements a part of EGA's [EgaCryptor](https://ega-archive.org/submission/tools/egacryptor)
-Toolsuite, namely, the encryption and upload part.
+Toolsuite, namely, the encryption and upload part. It does this in the form of
+(mostly) portable shell scripts that can run in cluster setups, allowing one to
+parallelize encryption of larger submissions.
 
-==== 0-generate-links.sh ====
+## 0-generate-links.sh
 
 This script will generate a working structure in the current directory. It
 creates symlinks and a todo list.
@@ -15,14 +17,15 @@ publication, e.g. hiding sensitive names/identifiers, or using a
 publication-specific numbering scheme.
 
 ```csv
+# map-file.txt
 # comments work, and are ignored for encryption
 
-# so are empty lines
+# empty lines are no problem either!
 
 # a fastq file to encrypt
 /absolute/path/to/file/to/encrypt.fastq name-that-will-be-public-on-EGA.fastq
 
-# a bam file
+# bam files too:
 /more/files/fileA.bam   public-name-for-fileA.bam
 /more/files/MaxMusterman_Tumor.bam   public-name-FileB.bam
 /home/myStuff/EvaXample_germline.bam    public-name-FileC.bam
@@ -39,9 +42,9 @@ path/to/0-generate-links.sh your-mapping-file.csv
 ```
 
 a local `files` subdirectory will be created with the generated symlink 
-structure, as well as a filelist-<DATE>.txt file as input for the next steps.
+structure, as well as a `filelist-<DATE>.txt` file as input for the next steps.
 
-==== 1-submit-encryption-jobs.sh ====
+## 1-submit-encryption-jobs.sh
 
 This script submits the actual encryption jobs to the cluster.
 Currently it only supports PBS-based clusters using `qsub`.
@@ -72,7 +75,7 @@ encrypted file (`filename.gpg`), and md5 checksums for both encrypted and
 unencrypted versions of said file (`filename.md5` and `filename.gpg.md5`).
 All three are suitable for upload directly to EGA's submission inbox.
 
-==== 2-aspera-upload.sh ====
+## 2-aspera-upload.sh
 
 This script will upload the encrypted results of a filelist to EGA's submission
 inbox. It requires Aspera's `ascp` to be installed and in path, and takes its
@@ -80,8 +83,9 @@ login details from environment variables. (see `aspera-env.conf.template`).
 
 depending on internet weather and your local outgoing connection, you probably
 want to impose an upload speed limit by setting environment variable
-`$SPEED_LIMIT`, default is `SPEED_LIMIT=100M`.
-in our (limited) personal experience, "bursty" or "stuttering" upload behaviour
+`$SPEED_LIMIT`. EGA recommends a maximum of 300M (Mbit/second), our 
+battle-tested default is `SPEED_LIMIT=100M`.
+In our (limited) personal experience, "bursty" or "stuttering" upload behaviour
 can usually be solved by setting a lower speed limit. Uploads that stutter and 
 stall at 101M can be rock-solid at 100M if certain firewalls are present along
 the path.
@@ -97,5 +101,5 @@ SPEED_LIMIT=99M path/to/2-aspera-upload.sh filelist-<DATE>.txt
 If no filelist is specified, it will automatically try to use the
 most-recently modified `filelist*`.
 
-Since upload can take a long time, we recommend doing this in `nohup`, `screen`
-or `tmux` sessions.
+Since upload can easily take multiple days, we recommend doing this in `nohup`,
+`screen` or `tmux` sessions.
