@@ -5,7 +5,27 @@ Toolsuite, namely, the encryption and upload part. It does this in the form of
 (mostly) portable shell scripts that can run in cluster setups, allowing one to
 parallelize encryption of larger submissions.
 
-## 0-generate-links.sh
+# Input welcome! Questions Welcome!
+
+These scripts are shared to make everyone's life easier in dealing with EGA.
+
+Asking questions is a way to make this project better. If something is unclear,
+please help us make the documentation better, by asking a question in the Issue
+Tracker
+
+
+# Steps
+
+This implementation divides the  encryption process into three logical steps:
+
+1. setup / preparation
+2. encryption
+3. upload
+
+Each step has different requirements on environment, CPU-load and internet 
+accessibility, so they are divided into three separate scripts to execute.
+
+## setup: 0-generate-links.sh
 
 This script will generate a working structure in the current directory. It
 creates symlinks and a todo list.
@@ -44,7 +64,7 @@ path/to/0-generate-links.sh your-mapping-file.csv
 a local `files` subdirectory will be created with the generated symlink 
 structure, as well as a `filelist-<DATE>.txt` file as input for the next steps.
 
-## 1-submit-encryption-jobs.sh
+## encryption: 1-submit-encryption-jobs.sh
 
 This script submits the actual encryption jobs to the cluster.
 Currently it only supports PBS-based clusters using `qsub`.
@@ -75,7 +95,7 @@ encrypted file (`filename.gpg`), and md5 checksums for both encrypted and
 unencrypted versions of said file (`filename.md5` and `filename.gpg.md5`).
 All three are suitable for upload directly to EGA's submission inbox.
 
-## 2-aspera-upload.sh
+## upload: 2-aspera-upload.sh
 
 This script will upload the encrypted results of a filelist to EGA's submission
 inbox. It requires Aspera's `ascp` to be installed and in path, and takes its
