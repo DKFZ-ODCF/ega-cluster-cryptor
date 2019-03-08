@@ -47,7 +47,7 @@ awk -F '[;\t]+' \
    '!( /^$/ || /^#/ ) {
       linkname = workdir "/" $2;
       print cwd "/"          linkname > filelist;
-      print "ln -s " $1 "  " linkname > linkscript;
+      print "ln -s \"" $1 "\" \"" linkname "\"" > linkscript;
     }' "$MAPFILE"
 
 # print blank line, to highlight any errors the linking might produce
