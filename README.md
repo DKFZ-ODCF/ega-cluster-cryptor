@@ -8,11 +8,12 @@ parallelize encryption of larger submissions.
 # Input welcome! Questions Welcome!
 
 These scripts are shared to make everyone's life easier in dealing with EGA.
+They started out as small internal tools at the Omics IT & Datamanagement Core Facility at the German Cancer Research Centre (DKFZ), a publicly funded body.
+They are made openly available under the MIT license under the philosophy of ["public money, public code"](https://publiccode.eu/).
 
 Asking questions is a way to make this project better. If something is unclear,
 please help us make the documentation better, by asking a question in the Issue
 Tracker
-
 
 # Steps
 
