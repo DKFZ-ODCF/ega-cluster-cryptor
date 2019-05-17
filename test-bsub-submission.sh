@@ -7,7 +7,7 @@ SHORTNAME="a.txt"
 FULL_FILE="$WORKDIR/$SHORTNAME"
 #REQ_WALLTIME="00:19:59"
 REQ_WALLTIME="00:09"
-SCRIPT="PBSJOB-ega-encryption.sh"
+SCRIPT="JOB-ega-encryption.sh"
 SUBMITLOG="$MY_DIR/submit.log"
 
     bsub \
