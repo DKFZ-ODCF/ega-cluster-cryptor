@@ -13,7 +13,7 @@
 #PBS  -l nodes=1
 #BSUB -n 1
 
-set -eu
+set -u
 
 cd "$WORKDIR"
 
