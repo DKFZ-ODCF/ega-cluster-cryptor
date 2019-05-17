@@ -68,7 +68,7 @@ for FULL_FILE in $unencryptedFiles; do
     HOURS="$(( MINUTES / 60 ))"
     MINUTES="$(( MINUTES - ( 60 * HOURS ) + 1 ))" # +1 to avoid requesting "0" for tiny files, and as margin
 
-    # prepend filename before qsub job-id output (intentionally no newline!)
+    # prepend filename before job-id output (intentionally no newline!)
     printf "%-29s\t%dh%02dm\t" "$SHORTNAME" "$HOURS" "$MINUTES" | tee -a "$SUBMITLOG"
 
     # actual job submission, prints job-id

@@ -7,7 +7,7 @@ parallelize encryption of larger submissions.
 
 # Input welcome! Questions Welcome!
 
-These scripts are shared to make everyone's life easier in dealing with EGA.
+These scripts are shared to make everyone's life easier when submitting to EGA.
 They started out as small internal tools at the Omics IT & Datamanagement Core Facility at the German Cancer Research Centre (DKFZ), a publicly funded body.
 They are made openly available under the MIT license under the philosophy of ["public money, public code"](https://publiccode.eu/).
 
@@ -52,10 +52,7 @@ publication-specific numbering scheme.
 /home/myStuff/EvaXample_germline.bam    public-name-FileC.bam
 ```
 
-allowing you to rename the files before 
-encryption, so
-
-call it as follows:
+Call it as follows:
 
 ```sh
 cd /path/to/work-dir
@@ -68,7 +65,9 @@ structure, as well as a `filelist-<DATE>.txt` file as input for the next steps.
 ## encryption: 1-submit-encryption-jobs.sh
 
 This script submits the actual encryption jobs to the cluster.
-Currently it only supports PBS-based clusters using `qsub`.
+It supports both PBS/Torque clusters, as well as LSF clusters
+(though the switch is currently hardcoded in the script, edit to your needs).
+
 
 Encryption is GPG-based, using 
 [EGA's public key](https://ega-archive.org/submission/EGA_public_key).
@@ -77,24 +76,24 @@ The submission script will check if GPG and this key are available.
 call it as follows:
 ```sh
 cd /path/to/work-dir
-path/to/1-submit-encryption-jobs.sh filelist-<DATE>.txt
+path/to/1-submit-encryption-jobs.sh [filelist-<DATE>.txt]
 ```
 
 if no filelist is explicitly provided, it will try to find the most recently
 modified `file-list*` and use that instead.
 Basic attempts to not restart already-running jobs are made (looking for partial
 or finished results in the `files` working directory), but please try not to
-rely on this too much, in case this check overlooks something, corrupted output
+rely on this too much. If the check overlooks something, corrupted output
 will be produced (two concurrent jobs writing to the same result file).
 
-The script can submit differently-sized input files to different queues based on
-walltime limits. These limits will likely need to be tuned to your local cluster
-situation.
+Walltime requests are tuned to each individual filesize to be encrypted,
+assuming a very conservative encryption speed.
+The `BYTES_PER_MINUTE` value probably needs tuning for each individual cluster
 
 Output is written to the `files` working directory, and consists of the
 encrypted file (`filename.gpg`), and md5 checksums for both encrypted and 
 unencrypted versions of said file (`filename.md5` and `filename.gpg.md5`).
-All three are suitable for upload directly to EGA's submission inbox.
+This trio is suitable for upload directly to EGA's submission inbox via Aspera or FTP.
 
 ## upload: 2-aspera-upload.sh
 
