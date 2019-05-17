@@ -44,7 +44,7 @@ unencryptedFiles=$(\
     ) \
 )
 
-
+echo -e "FILE_SHORTNAME              \tWTIME\tSUBMISSION_FEEDBACK" | tee -a "$SUBMITLOG"
 for FULL_FILE in $unencryptedFiles; do
   if [ ! -e "$FULL_FILE" ]; then
     echo "WARNING: File not found: $FULL_FILE" | tee -a "$SUBMITLOG"
