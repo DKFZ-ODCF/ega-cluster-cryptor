@@ -52,21 +52,19 @@ for FULL_FILE in $unencryptedFiles; do
     # readable label, without the full absolute path
     SHORTNAME=$(basename "$FULL_FILE")
 
-    # for smaller files: request less walltime so we get into the "fast" or "medium" queue
-    # (faster processing!)
-    # limits were experimentally established on 2017-09-04, using pbs3/4 cluster
-    # results: very linear speed of ~5G/7minutes
-    # The below limits keep some margin.
-    FAST_LIMIT="10737418240"   # 10 x (1024^3) = 10G ~  14 minutes, queue limit  20 min.
-    MEDIUM_LIMIT="85899345920" # 80 x (1024^3) = 80G ~ 112 minutes, queue limit 120 min.
-    FILESIZE=$(stat -c '%s' "$(readlink -f "$FULL_FILE")")
-    if [ "$FILESIZE" -le $FAST_LIMIT ]; then
-      REQ_WALLTIME="00:19:59"
-    elif [ "$FILESIZE" -le $MEDIUM_LIMIT ]; then
-      REQ_WALLTIME="01:59:59"
-    else
-      REQ_WALLTIME="11:59:59"
-    fi
+    # Request a sensible amount of walltime, and let the queue runlimits sort out which queue we get
+    FILESIZE=$(stat -c '%s' "$(readlink -f "$FULL_FILE")") # in bytes
+    # a rough estimate of encryption speed is 5GB/7 minutes ~ 0.7GB/min ~ 13 MB/s (established experimentally on our infrastructure)
+    # you might want to change this, as it is fairly conservative
+    BYTES_PER_MINUTE=750000000
+
+    MINUTES="$(( FILESIZE / BYTES_PER_MINUTE ))"
+    HOURS="$(( MINUTES / 60 ))"
+    MINUTES="$(( MINUTES - ( 60 * HOURS ) + 1 ))" # +1 to avoid requesting "0" for tiny files, and as margin
+
+    # PBS wants [hours:]minutes:seconds
+    REQ_WALLTIME=$( printf '%2d:%20d:00' $HOURS $MINUTES )
+
 
     # prepend filename before qsub job-id output (intentionally no newline!)
     printf "%-29s\t%s\t" "$SHORTNAME" "$REQ_WALLTIME" | tee -a "$SUBMITLOG"
