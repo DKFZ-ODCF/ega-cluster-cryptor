@@ -22,7 +22,7 @@ if [ ! -e "$MAPFILE" ]; then
   exit 2
 fi
 
-# get date only once, so createlinks and filelist have the identical one, up to the second
+# get date only once, so createlinks and to_encrypt_list have the identical one, up to the second
 DATE=$(date '+%Y-%m-%d_%H:%M:%S')
 
 # prepare working subdir, so we don't clutter the current directory with dozens/hundreds of
@@ -37,17 +37,16 @@ fi
 #   -F                -> accept either semicolon and/or tab as separator
 #   !( /^$/ || /^#/ ) -> ignore empty and/or comment lines
 # TODO: we should probably emit non-absolute paths, for more flexibility across machines
-FILE_LIST="filelist_$DATE.txt"
+TO_ENCRYPT_LIST="to-encrypt_$DATE.txt"
 LINK_SCRIPT="_create_links-$DATE.sh"
 awk -F '[;\t]+' \
    -v cwd="$(pwd)"  \
    -v workdir="$WORKDIR" \
-   -v filelist="filelist_$DATE.txt" \
+   -v to_encrypt_list="$TO_ENCRYPT_LIST" \
    -v linkscript="$LINK_SCRIPT" \
    '!( /^$/ || /^#/ ) {
-      linkname = workdir "/" $2;
-      print cwd "/"          linkname > filelist;
-      print "ln -s \"" $1 "\" \"" linkname "\"" > linkscript;
+      print $2 > to_encrypt_list;
+      print "ln -s \"" $1 "\" \"" workdir "/" $2 "\"" > linkscript;
     }' "$MAPFILE"
 
 # print blank line, to highlight any errors the linking might produce
@@ -58,5 +57,5 @@ sh "$LINK_SCRIPT";
 # and another blank line to "close"
 echo
 
-echo "done! newly created links in:   $FILE_LIST"
+echo "done! newly created links in:   $TO_ENCRYPT_LIST"
 

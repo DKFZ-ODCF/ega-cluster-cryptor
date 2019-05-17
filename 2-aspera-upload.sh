@@ -24,26 +24,26 @@ SPEED_LIMIT=${SPEED_LIMIT:-100M};
 
 
 # Get list of ToDo files
-# Either most-recent filelist*.txt, OR whatever the user wants
+# Either most-recent to-encrypt*.txt, OR whatever the user wants
 #
 # This should be the list of UNencrypted files, without any .gpg or .md5 extensions
 # The script will automatically search for the .md5, .gpg and .gpg.md5 files
-# (i.e. Use the same filelist as for starting the encryption)
+# (i.e. Use the same to_encrypt_list as for starting the encryption)
 #
 source "$(dirname $BASH_SOURCE)/util.sh"
 OVERRIDE_FILE="$1"
-FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
-verify_filelist "$FILE_LIST"
+TO_ENCRYPT_LIST=$(get_default_or_override_to_encrypt_list "$OVERRIDE_FILE");
+verify_to_encrypt_list "$TO_ENCRYPT_LIST"
 
-FILELIST_LINES=$( grep -c -v -e '^$' -e '^#' "$FILE_LIST" )
-echo "using file-list: $FILE_LIST ($FILELIST_LINES files)"
+TO_ENCRYPT_LIST_LINES=$( grep -c -v -e '^$' -e '^#' "$TO_ENCRYPT_LIST" )
+echo "using file-list: $TO_ENCRYPT_LIST ($TO_ENCRYPT_LIST_LINES files)"
 echo "Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER, limiting speed to ${SPEED_LIMIT}"
 
 
-# If we have a time-stamped file-list, use/create an upload-file with the matching time
+# If we have a logically named to-encrypt_list, use/create an upload-file with the matching time
 #   otherwise, generate a new one with the current time.
-if [[ "$FILE_LIST" =~ (^.*/)?filelist[-_] ]]; then
-  UPLOAD_LIST=${FILE_LIST//"filelist"/"_aspera-upload"}
+if [[ "$TO_ENCRYPT_LIST" =~ (^.*/)?to-encrypt[-_] ]]; then
+  UPLOAD_LIST=${TO_ENCRYPT_LIST//"to-encrypt"/"_aspera-upload"}
 else
   UPLOAD_LIST="_aspera-upload_$(date '+%Y-%m-%d_%H:%M:%S').txt"
 fi
@@ -67,15 +67,15 @@ if [ ! -e "$UPLOAD_LIST" ]; then
         >&2 echo "WARNING: Expected file wasn't there: $FILE"
       fi
     done
-  done < "$FILE_LIST"
+  done < "$TO_ENCRYPT_LIST"
 else
   UPLOADLIST_LINES=$( grep -c -v -e '^$' -e '^#' "$UPLOAD_LIST" )
   let "UPLOADLIST_TRIPLES = $UPLOADLIST_LINES/3";
-  if [ "$UPLOADLIST_TRIPLES" -eq "$FILELIST_LINES" ]; then
+  if [ "$UPLOADLIST_TRIPLES" -eq "$TO_ENCRYPT_LIST_LINES" ]; then
     echo "continuing with upload list: $UPLOAD_LIST ($UPLOADLIST_LINES files = $UPLOADLIST_TRIPLES triples)"
   else
     >&2 echo "ERROR: Upload list is too short compared to file list:
-      filelist \"$FILE_LIST\" is $FILELIST_LINES lines
+      to-encrypt list \"$TO_ENCRYPT_LIST\" is $TO_ENCRYPT_LIST_LINES lines
       expected an equal amount of triples in \"$UPLOAD_LIST\", but found $UPLOADLIST_TRIPLES ($UPLOADLIST_LINES lines)"
     exit 3
   fi

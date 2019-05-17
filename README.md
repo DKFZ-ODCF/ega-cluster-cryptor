@@ -60,7 +60,7 @@ path/to/0-generate-links.sh your-mapping-file.csv
 ```
 
 a local `files` subdirectory will be created with the generated symlink 
-structure, as well as a `filelist-<DATE>.txt` file as input for the next steps.
+structure, as well as a `to-encrypt_<DATE>.txt` file as input for the next steps.
 
 ## encryption: 1-submit-encryption-jobs.sh
 
@@ -76,11 +76,11 @@ The submission script will check if GPG and this key are available.
 call it as follows:
 ```sh
 cd /path/to/work-dir
-path/to/1-submit-encryption-jobs.sh [filelist-<DATE>.txt]
+path/to/1-submit-encryption-jobs.sh [to-encrypt_<DATE>.txt]
 ```
 
-if no filelist is explicitly provided, it will try to find the most recently
-modified `file-list*` and use that instead.
+if no to-encrypt filelist is explicitly provided, it will try to find the most recently
+modified `to-encrypt*` and use that instead.
 Basic attempts to not restart already-running jobs are made (looking for partial
 or finished results in the `files` working directory), but please try not to
 rely on this too much. If the check overlooks something, corrupted output
@@ -115,11 +115,11 @@ call it as follows:
 ```sh
 cd /path/to/work-dir
 source your-egalogin-aspera.conf
-SPEED_LIMIT=99M path/to/2-aspera-upload.sh filelist-<DATE>.txt
+SPEED_LIMIT=99M path/to/2-aspera-upload.sh to-encrypt_<DATE>.txt
 ```
 
 If no filelist is specified, it will automatically try to use the
-most-recently modified `filelist*`.
+most-recently modified `to-encrypt*`.
 
 Since upload can easily take multiple days, we recommend doing this in `nohup`,
 `screen` or `tmux` sessions.

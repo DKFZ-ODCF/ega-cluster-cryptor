@@ -2,8 +2,8 @@
 
 # INFO: if you want to restart the encryption for a file, delete all the corresponding *.md5 and *.gpg files
 #
-# This script will automatically find the most-recent "filelist*.txt" file and process files therein.
-# If you wish to use a different filelist, you can specify this as a command line argument:
+# This script will automatically find the most-recent "to-encrypt*.txt" file and process files therein.
+# If you wish to use a different to-encrypt list, you can specify this as a command line argument:
 #   1-submit-encryption-jobs.sh your-filelist.txt
 
 # Check if required EGA public key is known.
@@ -24,10 +24,10 @@ source "$(dirname $BASH_SOURCE)/util.sh"
 
 # Get default, latest input file, OR whatever the user wants
 OVERRIDE_FILE="$1"
-FILE_LIST=$(get_default_or_override_filelist "$OVERRIDE_FILE");
-verify_filelist "$FILE_LIST"
+TO_ENCRYPT_LIST=$(get_default_or_override_to_encrypt_list "$OVERRIDE_FILE");
+verify_to_encrypt_list "$TO_ENCRYPT_LIST"
 
-echo "using file-list: $FILE_LIST"
+echo "using file-list: $TO_ENCRYPT_LIST"
 
 
 WORKDIR="$(pwd)/files/"
@@ -38,26 +38,25 @@ if [ ! -d "$JOBLOGDIR" ]; then
 fi
 
 
-# Get files from file_list that DON'T have a corresponding .gpg file
-# TODO: when adapting FILE_LIST to have non-absolute paths, also adapt this spot
+# Get files from to-encrypt list that DON'T have a corresponding .gpg file
+# first input is the to-encrypt filelist, using `sed` to normalise for either absolute paths or relative paths in WORKDIR
+# second input is the contents of WORKDIR: all finished or partial encryption output, massaged with `sed` to match the original filename.
 unencryptedFiles=$(\
   comm -23 \
-   <(sort "$FILE_LIST") \
+   <(sed -E -e 's#^.+/##' "$TO_ENCRYPT_LIST" | sort ) \
    <( \
-      find "$WORKDIR" -type f \( -name "*.gpg" -or -name "*.gpg.partial" \) \
-      | sed -E "s/\.gpg(.partial)?//g" \
+      find "$WORKDIR" -type f \( -name '*.gpg' -or -name '*.gpg.partial' \) \
+      | sed -E -e 's#^.+/##' -e 's/\.gpg(.partial)?$//' \
       | sort \
     ) \
 )
 
-echo -e "FILE_SHORTNAME              \tWTIME\tSUBMISSION_FEEDBACK" | tee -a "$SUBMITLOG"
-for FULL_FILE in $unencryptedFiles; do
+echo -e "FILE                        \tWTIME\tSUBMISSION_FEEDBACK" | tee -a "$SUBMITLOG"
+for SHORTNAME in $unencryptedFiles; do
+  FULL_FILE="$WORKDIR/$SHORTNAME"
   if [ ! -e "$FULL_FILE" ]; then
     echo "WARNING: File not found: $FULL_FILE" | tee -a "$SUBMITLOG"
   else
-    # readable label, without the full absolute path
-    SHORTNAME=$(basename "$FULL_FILE")
-
     # Request a sensible amount of walltime, and let the queue runlimits sort out which queue we get
     FILESIZE=$(stat -c '%s' "$(readlink -f "$FULL_FILE")") # in bytes
     # a rough estimate of encryption speed is 5GB/7 minutes ~ 0.7GB/min ~ 13 MB/s (established experimentally on our infrastructure)
