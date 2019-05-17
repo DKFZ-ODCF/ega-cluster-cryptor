@@ -21,6 +21,7 @@ gpg --list-keys EGA_Public_key >/dev/null 2>&1;
 if [ $? != 0 ]; then
   >&2 echo "EGA public key not present in GPG key-ring on this worker node. Cannot encrypt."
   >&2 echo "  please contact your cluster administrator on how to deploy GPG-keys to worker nodes"
+  exit 17
 fi
 
 # extract filename from full path
