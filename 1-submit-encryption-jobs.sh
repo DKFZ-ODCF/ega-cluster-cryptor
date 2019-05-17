@@ -68,12 +68,8 @@ for FULL_FILE in $unencryptedFiles; do
     HOURS="$(( MINUTES / 60 ))"
     MINUTES="$(( MINUTES - ( 60 * HOURS ) + 1 ))" # +1 to avoid requesting "0" for tiny files, and as margin
 
-    # PBS wants [hours:]minutes:seconds
-    REQ_WALLTIME=$( printf '%2d:%20d:00' $HOURS $MINUTES )
-
-
     # prepend filename before qsub job-id output (intentionally no newline!)
-    printf "%-29s\t%s\t" "$SHORTNAME" "$REQ_WALLTIME" | tee -a "$SUBMITLOG"
+    printf "%-29s\t%dh%02dm\t" "$SHORTNAME" "$HOURS" "$MINUTES" | tee -a "$SUBMITLOG"
 
     # actual job submission, prints job-id
     if [ $CLUSTER_SYSTEM == "PBS" ]; then
@@ -82,7 +78,7 @@ for FULL_FILE in $unencryptedFiles; do
           -N "egacrypt-$SHORTNAME" \
           -e "$JOBLOGDIR" \
           -o "$JOBLOGDIR" \
-          -l "walltime=$REQ_WALLTIME" \
+          -l "walltime=$( printf '%2d:%20d:00' $HOURS $MINUTES )" \
           < "${BASH_SOURCE%/*}/JOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
     elif [ $CLUSTER_SYSTEM == "LSF" ]; then
       bsub \
@@ -91,7 +87,7 @@ for FULL_FILE in $unencryptedFiles; do
           -Jd "encrypting $SHORTNAME ($FULL_FILE) for the EGA archive" \
           -e "$JOBLOGDIR/%J-$SHORTNAME.err" \
           -o "$JOBLOGDIR/%J-$SHORTNAME.out" \
-          -W $REQ_WALLTIME \
+          -W $( printf '%2d:%02d' $HOURS $MINUTES ) \
           < "${BASH_SOURCE%/*}/JOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
     else
       echo "ERROR: specified unknown cluster system '$CLUSTER_SYSTEM'; no jobs submitted" | tee -a "$SUBMITLOG"
