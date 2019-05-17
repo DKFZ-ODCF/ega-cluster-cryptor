@@ -49,7 +49,7 @@ TOTAL_PIPESTATUS="$FILE.pipestatus"
 #  We use piping and tee-ing extensively to ensure each disk-IO is only needed once
 #  and we can calculate the md5 checksums while we have it in memory "anyway".
 tee < "$FILE" >(
-    gpg -e --always-trust -r EGA_Public_key | tee \
+    gpg --encrypt --always-trust -r EGA_Public_key | tee \
         "$ENCRYPTED_PARTIAL" \
         | md5sum > "$ENCRYPTED_MD5_PARTIAL"; \
     echo "INTERNAL ${PIPESTATUS[*]}" > "$INTERNAL" \
