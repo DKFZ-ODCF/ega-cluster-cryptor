@@ -14,7 +14,7 @@ fi
 # note that this substring scan requires the more advanced double-bracket test: [[
 #   this doesn't work in all shells, so we require bash
 # see also: http://timmurphy.org/2013/05/13/string-contains-substring-in-bash/
-if [[ ("$ASPERA_SCP_PASS" =~ "TODO") || ("$ASPERA_USER" =~ "TODO") ]]; then
+if [[ ("$ASPERA_SCP_PASS" =~ TODO) || ("$ASPERA_USER" =~ TODO) ]]; then
   >&2 echo "ERROR: Aspera environment variables still contain \"TODO\", exiting!
   Did you already change them to the correct box+password for this submission?"
   exit 1
@@ -30,7 +30,7 @@ SPEED_LIMIT=${SPEED_LIMIT:-100M};
 # The script will automatically search for the .md5, .gpg and .gpg.md5 files
 # (i.e. Use the same to_encrypt_list as for starting the encryption)
 #
-source "$(dirname $BASH_SOURCE)/util.sh"
+source "$(dirname "$BASH_SOURCE")/util.sh"
 OVERRIDE_FILE="$1"
 TO_ENCRYPT_LIST=$(get_default_or_override_to_encrypt_list "$OVERRIDE_FILE");
 verify_to_encrypt_list "$TO_ENCRYPT_LIST"
@@ -100,7 +100,7 @@ fi
 #  -d            --> create target dir on receiver
 #
 ascp \
-  -k2 --policy=fair -l $SPEED_LIMIT -m 0 \
+  -k2 --policy=fair -l "$SPEED_LIMIT" -m 0 \
   -T \
   -L "$(pwd)" \
   --retry-timeout=1800 \
