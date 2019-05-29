@@ -19,8 +19,11 @@ cd "$WORKDIR"
 
 gpg --list-keys EGA_Public_key >/dev/null 2>&1;
 if [ $? != 0 ]; then
-  >&2 echo "EGA public key not present in GPG key-ring on this worker node. Cannot encrypt."
-  >&2 echo "  please contact your cluster administrator on how to deploy GPG-keys to worker nodes"
+  >&2 echo "EGA public key not present in GPG keyring on this worker node
+  -> Cluster node cannot encrypt.
+
+Please obtain the key from EGA: https://ega-archive.org/submission/EGA_public_key .
+Then contact your cluster administrator on how to deploy GPG-keys to worker nodes"
   exit 17
 fi
 
@@ -31,8 +34,8 @@ ENCRYPTED_MD5_PARTIAL="$FILE.gpg.md5.partial"
 PLAIN_MD5_PARTIAL="$FILE.md5.partial"
 
 # double-check we're not accidentally encrypting this file already
-#   since output filenames are based on input filename, two concurrent
-#   encryption jobs will trash the output
+#   since output filenames are non-randomly derived from the input filename,
+#   two concurrent encryption jobs will trash the output
 # Abort if we're the second one
 if [ -e "$ENCRYPTED_PARTIAL" -o -e "$ENCRYPTED_MD5_PARTIAL" -o -e "$PLAIN_MD5_PARTIAL" ]; then
   >&2 echo "ABORT: partial files already present, encryption probably already running."
@@ -45,12 +48,14 @@ INTERNAL=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-internal.tmp")
 EXTERNAL=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-external.tmp")
 TOTAL_PIPESTATUS="$FILE.pipestatus"
 
-# process file
-#  Put all results into .partial files first, to signal that they are incomplete
-#  We use piping and tee-ing extensively to ensure each disk-IO is only needed once
-#  and we can calculate the md5 checksums while we have it in memory "anyway".
+# Process the file! This is a bit tricky:
+#  - Key A6F53234DBB82C79 = EGA_Public_key, imported from https://ega-archive.org/submission/EGA_public_key
+#    the "long key ID" is the last 16 characters/64 bytes from the key fingerprint (spaces removed)
+#  - Put all results into .partial files first, to signal that they are incomplete
+#  - We use piping and tee-ing extensively to ensure each disk-IO is only needed once
+#    and we can calculate the md5 checksums while we have it in memory "anyway".
 tee < "$FILE" >(
-    gpg --encrypt --always-trust -r EGA_Public_key | tee \
+    gpg --encrypt --trusted-key 'A6F53234DBB82C79' --recipient EGA_Public_key | tee \
         "$ENCRYPTED_PARTIAL" \
         | md5sum > "$ENCRYPTED_MD5_PARTIAL"; \
     echo "INTERNAL ${PIPESTATUS[*]}" > "$INTERNAL" \

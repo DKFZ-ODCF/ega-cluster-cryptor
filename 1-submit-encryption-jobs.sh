@@ -9,8 +9,12 @@
 # Check if required EGA public key is known.
 gpg --list-keys EGA_Public_key >/dev/null 2>&1;
 if [ $? != 0 ]; then
-  >&2 echo "EGA public key not present in GPG key-ring. Cannot encrypt."
-  >&2 echo "  please install it using \`gpg --import EGA_public_key.gpg\`"
+  >&2 echo "EGA public key not present in GPG keyring on this submission host
+  -> Cluster nodes probably cannot encrypt.
+
+Please obtain the key from EGA: https://ega-archive.org/submission/EGA_public_key
+  Install the obtained key with: \`gpg --import EGA_public_key.gpg\`
+  There is a copy included with this script, but are you REALLY sure that is the right one? >:-)"
 fi
 
 CLUSTER_SYSTEM='LSF'
