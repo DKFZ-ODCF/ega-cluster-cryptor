@@ -43,7 +43,10 @@ fi
 # second input is the contents of WORKDIR: all finished or partial encryption output, massaged with `sed` to match the original filename.
 unencryptedFiles=$(\
   comm -23 \
-   <(sed -E -e 's#^.+/##' "$TO_ENCRYPT_LIST" | sort ) \
+   <( cut -f2 "$TO_ENCRYPT_LIST" \
+      | sed -E -e 's#^.+/##' \
+      | sort \
+    ) \
    <( \
       find "$WORKDIR" -type f \( -name '*.gpg' -or -name '*.gpg.partial' \) \
       | sed -E -e 's#^.+/##' -e 's/\.gpg(.partial)?$//' \
