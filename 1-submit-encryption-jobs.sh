@@ -41,8 +41,8 @@ fi
 # Get files from to-encrypt list that DON'T have a corresponding .gpg file
 # first input is the to-encrypt filelist, using `sed` to normalise for either absolute paths or relative paths in WORKDIR
 # second input is the contents of WORKDIR: all finished or partial encryption output, massaged with `sed` to match the original filename.
-unencryptedFiles=$(\
-  comm -23 \
+comm_output=$(\
+  comm \
    <( cut -f2 "$TO_ENCRYPT_LIST" \
       | sed -E -e 's#^.+/##' \
       | sort \
@@ -53,9 +53,14 @@ unencryptedFiles=$(\
       | sort \
     ) \
 )
+unencryptedFiles=( $( cut -f1 <<<"$comm_output" ) )
+alreadyEncryptedFiles=( $( cut -f3 <<<"$comm_output" ) )
+echo "found ${#alreadyEncryptedFiles[*]} encrypted and/or in-progress files. Submitting ${#unencryptedFiles[*]} new encryption jobs:"
 
-echo -e "FILE                        \tWTIME\tSUBMISSION_FEEDBACK" | tee -a "$SUBMITLOG"
-for SHORTNAME in $unencryptedFiles; do
+if [ ${#unencryptedFiles[*]} -ge 1 ]; then
+  echo -e "FILE                        \tWTIME\tSUBMISSION_FEEDBACK" | tee -a "$SUBMITLOG"
+fi
+for SHORTNAME in ${unencryptedFiles[*]}; do
   FULL_FILE="$WORKDIR/$SHORTNAME"
   if [ ! -e "$FULL_FILE" ]; then
     echo "WARNING: File not found: $FULL_FILE" | tee -a "$SUBMITLOG"
