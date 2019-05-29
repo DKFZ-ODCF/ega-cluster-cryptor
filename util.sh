@@ -2,7 +2,8 @@
 # general purpose, re-usable functions for the submission scripts
 
 get_most_recent_to_encrypt_list() {
-  ls -t to-encrypt*.txt | head -n1
+  # `find` is recommended for scripting, but sorting by modification time is _really_ annoying in that solution.
+  ls -t to-encrypt*.txt 2> /dev/null | head -n1
 }
 
 # usage: TO_ENCRYPT_LIST=get_default_or_override_to_encrypt_list(COMMAND_LINE_OVERRIDE)
