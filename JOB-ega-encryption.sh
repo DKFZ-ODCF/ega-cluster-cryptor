@@ -15,8 +15,33 @@
 
 set -u
 
+
+function cleanup_and_terminate() {
+  STATUS_EXTENSION=$1
+  EXIT_STATUS=$2
+
+  # maybe leftover pipestatus, depending on how far the pipeline got:
+  if [ -e "$INNER_PIPESTATUS" ]; then
+    rm "$INNER_PIPESTATUS"
+  fi
+
+  # allow entire project-group read-access to our output
+  # (useful when encrypting is done by a different user than the upload)
+  chmod g+r "$ENCRYPTED_PARTIAL" "$ENCRYPTED_MD5_PARTIAL" "$PLAIN_MD5_PARTIAL"
+
+  # rename our output files to communicate success-or-not
+  mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg$STATUS_EXTENSION"
+  mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5$STATUS_EXTENSION"
+  mv "$PLAIN_MD5_PARTIAL"       "$FILE.md5$STATUS_EXTENSION"
+
+  # let job managment system know how it went
+  exit $EXIT_STATUS
+}
+
+
 cd "$WORKDIR"
 
+# check if we have the required key to encrypt with
 gpg --list-keys EGA_Public_key >/dev/null 2>&1;
 if [ $? != 0 ]; then
   >&2 echo "EGA public key not present in GPG keyring on this worker node
@@ -43,6 +68,11 @@ if [ -e "$ENCRYPTED_PARTIAL" -o -e "$ENCRYPTED_MD5_PARTIAL" -o -e "$PLAIN_MD5_PA
   exit 2
 fi
 
+#############
+# If we get this far, time to start doing actual work!
+
+# be prepared to clean up on LSF WALLTIME kills
+trap 'cleanup_and_terminate ".walltime.failed" 2' SIGUSR2
 
 # Process the file! This is a bit tricky:
 #  - We use piping and tee-ing extensively to ensure each disk-IO is only needed once
@@ -50,7 +80,7 @@ fi
 #  - the recursive tee-ing means we have two levels of PIPESTATUS to worry about.
 #  - the inner subshell (from `>()` process substitution) cannot export variables to the parent, so writes a tempfile
 #  - GPG Key A6F53234DBB82C79 = EGA_Public_key, imported from https://ega-archive.org/submission/EGA_public_key
-#    the "long key ID" is the last 16 characters/64 bytes from the key fingerprint (spaces removed)
+#    the "long key ID" is the last 16 characters/64 bytes from the key fingerprint (spaces must be removed)
 #  - Put all results into .partial files first, to signal that they are incomplete
 INNER_PIPESTATUS=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-inner.tmp")
 tee < "$FILE" >(
@@ -62,7 +92,6 @@ tee < "$FILE" >(
   | md5sum > "$PLAIN_MD5_PARTIAL"; \
   OUTER_PIPESTATUS="OUTER ${PIPESTATUS[*]}"
 TOTAL_PIPESTATUS="$(cat "$INNER_PIPESTATUS") - ${OUTER_PIPESTATUS}  $FILE"
-rm "$INNER_PIPESTATUS"
 
 # replace '-' label (STDIN) in md5 files with the actual file-name used
 # to comply with the commonly accepted md5sum fileformat
@@ -72,23 +101,11 @@ sed -i s/-/"$FILE"/     "$PLAIN_MD5_PARTIAL"
 # we're done. Check if everything worked without problems
 if [ "$TOTAL_PIPESTATUS" == "INNER 0 0 0 - OUTER 0 0  $FILE" ]; then
   # success! no pipes broke :-D
-  STATUS_EXTENSION='' # blank means "success"
-  EXIT_STATUS=0
+  cleanup_and_terminate '' 0 # empty status-extension results in 'normal' filename without additions
 else
   # failure! at least one pipe broke :-(
   >&2 echo "ERROR: at least one pipe broke; pipe output: $TOTAL_PIPESTATUS"
-  STATUS_EXTENSION=".failed"
-  EXIT_STATUS=1 # signal non-success to job system
+  cleanup_and_terminate '.failed' 1
 fi
 
-# give read-access to the entire project-group
-# (useful when encrypting is done by a different user than the upload)
-chmod g+r "$ENCRYPTED_PARTIAL" "$ENCRYPTED_MD5_PARTIAL" "$PLAIN_MD5_PARTIAL"
-
-# move generated files to final location, depending on success-or-not
-mv "$ENCRYPTED_PARTIAL"       "$FILE.gpg$STATUS_EXTENSION"
-mv "$ENCRYPTED_MD5_PARTIAL"   "$FILE.gpg.md5$STATUS_EXTENSION"
-mv "$PLAIN_MD5_PARTIAL"       "$FILE.md5$STATUS_EXTENSION"
-
-# let job managment system know if we succeeded (or not)
-exit $EXIT_STATUS
+# EOF
