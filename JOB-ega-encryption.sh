@@ -43,28 +43,26 @@ if [ -e "$ENCRYPTED_PARTIAL" -o -e "$ENCRYPTED_MD5_PARTIAL" -o -e "$PLAIN_MD5_PA
   exit 2
 fi
 
-# set temp files
-INTERNAL=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-internal.tmp")
-EXTERNAL=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-external.tmp")
-TOTAL_PIPESTATUS="$FILE.pipestatus"
 
 # Process the file! This is a bit tricky:
-#  - Key A6F53234DBB82C79 = EGA_Public_key, imported from https://ega-archive.org/submission/EGA_public_key
-#    the "long key ID" is the last 16 characters/64 bytes from the key fingerprint (spaces removed)
-#  - Put all results into .partial files first, to signal that they are incomplete
 #  - We use piping and tee-ing extensively to ensure each disk-IO is only needed once
 #    and we can calculate the md5 checksums while we have it in memory "anyway".
+#  - the recursive tee-ing means we have two levels of PIPESTATUS to worry about.
+#  - the inner subshell (from `>()` process substitution) cannot export variables to the parent, so writes a tempfile
+#  - GPG Key A6F53234DBB82C79 = EGA_Public_key, imported from https://ega-archive.org/submission/EGA_public_key
+#    the "long key ID" is the last 16 characters/64 bytes from the key fingerprint (spaces removed)
+#  - Put all results into .partial files first, to signal that they are incomplete
+INNER_PIPESTATUS=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-inner.tmp")
 tee < "$FILE" >(
     gpg --encrypt --trusted-key 'A6F53234DBB82C79' --recipient EGA_Public_key | tee \
         "$ENCRYPTED_PARTIAL" \
         | md5sum > "$ENCRYPTED_MD5_PARTIAL"; \
-    echo "INTERNAL ${PIPESTATUS[*]}" > "$INTERNAL" \
+    echo "INNER ${PIPESTATUS[*]}" > "$INNER_PIPESTATUS" \
   ) \
   | md5sum > "$PLAIN_MD5_PARTIAL"; \
-  echo "EXTERNAL ${PIPESTATUS[*]}" > "$EXTERNAL"
-# store combined pipestatus into a file, delete intermediate tempfiles
-echo "$(cat "$INTERNAL")  $(cat "$EXTERNAL")  $FILE" > "$TOTAL_PIPESTATUS"
-rm "$INTERNAL" "$EXTERNAL"
+  OUTER_PIPESTATUS="OUTER ${PIPESTATUS[*]}"
+TOTAL_PIPESTATUS="$(cat "$INNER_PIPESTATUS") - ${OUTER_PIPESTATUS}  $FILE"
+rm "$INNER_PIPESTATUS"
 
 # replace '-' label (STDIN) in md5 files with the actual file-name used
 # to comply with the commonly accepted md5sum fileformat
@@ -72,16 +70,15 @@ sed -i s/-/"$FILE.gpg"/ "$ENCRYPTED_MD5_PARTIAL"
 sed -i s/-/"$FILE"/     "$PLAIN_MD5_PARTIAL"
 
 # we're done. Check if everything worked without problems
-if [ "$(cat "$TOTAL_PIPESTATUS")" == "INTERNAL 0 0 0  EXTERNAL 0 0  $FILE" ]; then
+if [ "$TOTAL_PIPESTATUS" == "INNER 0 0 0 - OUTER 0 0  $FILE" ]; then
   # success! no pipes broke :-D
   STATUS_EXTENSION='' # blank means "success"
   EXIT_STATUS=0
-  rm "$TOTAL_PIPESTATUS" # not needed if everything worked :-)
 else
   # failure! at least one pipe broke :-(
+  >&2 echo "ERROR: at least one pipe broke; pipe output: $TOTAL_PIPESTATUS"
   STATUS_EXTENSION=".failed"
   EXIT_STATUS=1 # signal non-success to job system
-  # keep TOTAL_PIPESTATUS for debugging.
 fi
 
 # give read-access to the entire project-group
