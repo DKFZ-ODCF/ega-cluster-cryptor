@@ -35,6 +35,10 @@ OVERRIDE_FILE="$1"
 TO_ENCRYPT_LIST=$(get_default_or_override_to_encrypt_list "$OVERRIDE_FILE");
 verify_to_encrypt_list "$TO_ENCRYPT_LIST"
 
+# reasonable assumption where the encrypted files are: in the conventional workdir next to the encryption-list
+WORKDIR="$( dirname "TO_ENCRYPT_LIST" )/files/"
+
+
 TO_ENCRYPT_LIST_LINES=$( grep -c -v -e '^$' -e '^#' "$TO_ENCRYPT_LIST" )
 echo "using file-list: $TO_ENCRYPT_LIST ($TO_ENCRYPT_LIST_LINES files)"
 echo "Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER, setting SPEED_LIMIT=${SPEED_LIMIT}"
@@ -58,9 +62,10 @@ if [ ! -e "$UPLOAD_LIST" ]; then
     exit 2
   fi
 
+  # convert list of unencrypted files to list of encrypted versions plus checksums
   while read -r UNENCRYPTED; do
     for EXTENSION in 'md5' 'gpg.md5' 'gpg'; do
-      FILE="$UNENCRYPTED.$EXTENSION"
+      FILE="$WORKDIR/$UNENCRYPTED.$EXTENSION"
       if [ -e "$FILE" ]; then
         echo "$FILE" >> "$UPLOAD_LIST"
       else
