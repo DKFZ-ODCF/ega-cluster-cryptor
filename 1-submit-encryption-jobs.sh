@@ -45,20 +45,22 @@ fi
 # Get files from to-encrypt list that DON'T have a corresponding .gpg file
 # first input is the to-encrypt filelist, using `sed` to normalise for either absolute paths or relative paths in WORKDIR
 # second input is the contents of WORKDIR: all finished or partial encryption output, massaged with `sed` to match the original filename.
-comm_output=$(\
-  comm \
-   <( cut -f2 "$TO_ENCRYPT_LIST" \
+toEncryptFiles=( $( cut -f2 "$TO_ENCRYPT_LIST" \
       | sed -E -e 's#^.+/##' \
-      | sort \
-    ) \
-   <( \
-      find "$WORKDIR" -type f \( -name '*.gpg' -or -name '*.gpg.partial' \) \
+      | sort
+))
+workdirFiles=( $( find "$WORKDIR" -type f \( -name '*.gpg' -or -name '*.gpg.partial' \) \
       | sed -E -e 's#^.+/##' -e 's/\.gpg(.partial)?$//' \
-      | sort \
-    ) \
-)
-unencryptedFiles=( $( cut -f1 <<<"$comm_output" ) )
-alreadyEncryptedFiles=( $( cut -f3 <<<"$comm_output" ) )
+      | sort
+))
+unencryptedFiles=( $( comm -23 \
+  <( printf -- '%s\n' "${toEncryptFiles[@]}" ) \
+  <( printf -- '%s\n' "${workdirFiles[@]}" ) \
+) )
+alreadyEncryptedFiles=( $( comm -12 \
+  <( printf -- '%s\n' "${toEncryptFiles[@]}" ) \
+  <( printf -- '%s\n' "${workdirFiles[@]}" ) \
+) )
 echo "found ${#alreadyEncryptedFiles[*]} encrypted and/or in-progress files. Submitting ${#unencryptedFiles[*]} new encryption jobs:"
 
 if [ ${#unencryptedFiles[*]} -ge 1 ]; then
