@@ -53,9 +53,10 @@ else
 fi
 
 # See if the upload-list already exists, if not, create and populate it:
-# convert list of unencrypted files to list of encrypted versions plus checksums
 if [ ! -e "$UPLOAD_LIST" ]; then
   echo "creating new upload list: $UPLOAD_LIST"
+  # permission check: when using different users between the (often proxied/internetless )encryption/cluster and
+  # the internet-enabled upload-machines, the permissions are sometimes wrong.
   echo "" > "$UPLOAD_LIST"
   if [ ! -e "$UPLOAD_LIST" ]; then
     >&2 echo "ERROR: couldn't create \"$UPLOAD_LIST\", do you have write permission on the folder?"
@@ -74,6 +75,8 @@ if [ ! -e "$UPLOAD_LIST" ]; then
     done
   done < "$TO_ENCRYPT_LIST"
 else
+  # If Upload-list exists, check if it is complete compared to the to-encrypt list
+  #   (in case we aborted previous upload-runs while they were generating this list)
   UPLOADLIST_LINES=$( grep -c -v -e '^$' -e '^#' "$UPLOAD_LIST" )
   let "UPLOADLIST_TRIPLES = $UPLOADLIST_LINES/3";
   if [ "$UPLOADLIST_TRIPLES" -eq "$TO_ENCRYPT_LIST_LINES" ]; then
