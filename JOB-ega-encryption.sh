@@ -44,11 +44,18 @@ cd "$WORKDIR"
 # check if we have the required key to encrypt with
 gpg --list-keys EGA_Public_key >/dev/null 2>&1;
 if [ $? != 0 ]; then
-  >&2 echo "EGA public key not present in GPG keyring on this worker node
-  -> Cluster node cannot encrypt.
+  >&2 echo "ERROR: EGA public key not present in GPG keyring on this worker node.
+  -> Cannot encrypt with EGA as recipient.
 
-Please obtain the key from EGA: https://ega-archive.org/submission/EGA_public_key .
-Then contact your cluster administrator on how to deploy GPG-keys to worker nodes"
+Did you import EGA's key to your keyring? (probably on the cluster headnode)
+  - If not: please do so with \`gpg --import EGA_public_key.gpg\`
+  - If yes: this cluster apparantly doesn't automatically share config between headnodes and worker nodes.
+    This script doesn't know how to handle that situation, so please contact your cluster admin.
+
+Public key should be obtained from EGA: https://ega-archive.org/submission/EGA_public_key .
+  (those who believe this author is trustworthy, can used the copy included with this script)
+"
+
   exit 17
 fi
 
