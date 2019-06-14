@@ -42,7 +42,7 @@ function cleanup_and_terminate() {
 cd "$WORKDIR"
 
 # check if we have the required key to encrypt with
-gpg --list-keys EGA_Public_key >/dev/null 2>&1;
+gpg --no-tty --batch --list-keys EGA_Public_key >/dev/null 2>&1;
 if [ $? != 0 ]; then
   >&2 echo "ERROR: EGA public key not present in GPG keyring on this worker node.
   -> Cannot encrypt with EGA as recipient.
@@ -84,14 +84,18 @@ trap 'cleanup_and_terminate ".walltime.failed" 2' SIGUSR2
 # Process the file! This is a bit tricky:
 #  - We use piping and tee-ing extensively to ensure each disk-IO is only needed once
 #    and we can calculate the md5 checksums while we have it in memory "anyway".
-#  - the recursive tee-ing means we have two levels of PIPESTATUS to worry about.
-#  - the inner subshell (from `>()` process substitution) cannot export variables to the parent, so writes a tempfile
-#  - GPG Key A6F53234DBB82C79 = EGA_Public_key, imported from https://ega-archive.org/submission/EGA_public_key
-#    the "long key ID" is the last 16 characters/64 bytes from the key fingerprint (spaces must be removed)
+#  - the recursive tee-ing means we have two levels of PIPESTATUS to worry about:
+#    - the inner subshell (from `>()` process substitution) cannot export variables to the parent, so writes a tempfile
+#    - outer shell can read its pipestatus directly from variable, and merges it with that from tempfile.
+#  - trust-model=always: To save each user from individually having to mark EGA's key as trusted,
+#    tell GPG to skip any and all key verificiation during this encryption
 #  - Put all results into .partial files first, to signal that they are incomplete
 INNER_PIPESTATUS=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-inner.tmp")
 tee < "$FILE" >(
-    gpg --encrypt --trusted-key 'A6F53234DBB82C79' --recipient EGA_Public_key | tee \
+    gpg --encrypt --recipient EGA_Public_key \
+      --no-tty --batch \
+      --trust-model=always \
+    | tee \
         "$ENCRYPTED_PARTIAL" \
         | md5sum > "$ENCRYPTED_MD5_PARTIAL"; \
     echo "INNER ${PIPESTATUS[*]}" > "$INNER_PIPESTATUS" \

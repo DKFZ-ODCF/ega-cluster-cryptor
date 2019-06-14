@@ -7,7 +7,7 @@
 #   1-submit-encryption-jobs.sh your-filelist.txt
 
 # Check if required EGA public key is known.
-gpg --list-keys EGA_Public_key >/dev/null 2>&1;
+gpg --no-tty --batch --list-keys EGA_Public_key >/dev/null 2>&1;
 if [ $? != 0 ]; then
   >&2 echo "ERROR: EGA public key not present in GPG keyring on this submission host
   -> Worker nodes probably cannot encrypt with EGA as recipient.
