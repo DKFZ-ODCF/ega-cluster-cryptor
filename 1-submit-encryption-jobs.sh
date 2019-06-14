@@ -77,9 +77,13 @@ for SHORTNAME in ${unencryptedFiles[*]}; do
   else
     # Request a sensible amount of walltime, and let the queue runlimits sort out which queue we get
     FILESIZE=$(stat -c '%s' "$(readlink -f "$FULL_FILE")") # in bytes
-    # a rough estimate of encryption speed is 5GB/7 minutes ~ 0.7GB/min ~ 13 MB/s (established experimentally on our infrastructure)
-    # you might want to change this, as it is fairly conservative
-    BYTES_PER_MINUTE=750000000
+
+    # Be VERY pessimistic about encryption speed: 200 MByte/minute ~ 3 MByte/second.
+    #   under good conditions, we can easily do five times that, but bad "I/O weather"
+    #   can easily kill throughput.
+    # By underestimating our speed, we'll probably request too much walltime, but that's
+    #   better than being walltime-killed 80% of the way (with no way to resume later)
+    BYTES_PER_MINUTE=200000000
 
     MINUTES="$(( FILESIZE / BYTES_PER_MINUTE ))"
     HOURS="$(( MINUTES / 60 ))"
