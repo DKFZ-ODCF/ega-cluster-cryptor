@@ -22,6 +22,9 @@ fi
 
 SPEED_LIMIT=${SPEED_LIMIT:-100M};
 
+# find wherever this script is, and load the util library next to it
+#   even when hidden behind symlinks
+source "$(dirname $(readlink -f "$0"))/util.sh"
 
 # Get list of ToDo files
 # Either most-recent to-encrypt*.txt, OR whatever the user wants
@@ -30,7 +33,6 @@ SPEED_LIMIT=${SPEED_LIMIT:-100M};
 # The script will automatically search for the .md5, .gpg and .gpg.md5 files
 # (i.e. Use the same to_encrypt_list as for starting the encryption)
 #
-source "$(dirname "$BASH_SOURCE")/util.sh"
 OVERRIDE_FILE="$1"
 TO_ENCRYPT_LIST=$(get_default_or_override_to_encrypt_list "$OVERRIDE_FILE");
 verify_to_encrypt_list "$TO_ENCRYPT_LIST"

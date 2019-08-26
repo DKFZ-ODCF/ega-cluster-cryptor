@@ -26,9 +26,9 @@ CLUSTER_SYSTEM='LSF'
 
 echo "using cluster system: $CLUSTER_SYSTEM"
 
-
 # find wherever this script is, and load the util library next to it
-source "$(dirname "$BASH_SOURCE")/util.sh"
+#   even when hidden behind symlinks
+source "$(dirname $(readlink -f "$0"))/util.sh"
 
 # Get default, latest input file, OR whatever the user wants
 OVERRIDE_FILE="$1"
