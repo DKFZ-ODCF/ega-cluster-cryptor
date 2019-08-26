@@ -28,7 +28,8 @@ echo "using cluster system: $CLUSTER_SYSTEM"
 
 # find wherever this script is, and load the util library next to it
 #   even when hidden behind symlinks
-source "$(dirname $(readlink -f "$0"))/util.sh"
+OUR_DIR="$(dirname $(readlink -f "$0"))"
+source "${OUR_DIR}/util.sh"
 
 # Get default, latest input file, OR whatever the user wants
 OVERRIDE_FILE="$1"
@@ -94,22 +95,22 @@ for SHORTNAME in ${unencryptedFiles[*]}; do
 
     # actual job submission, prints job-id
     if [ $CLUSTER_SYSTEM == "PBS" ]; then
-      qsub \
+      2>&1 qsub \
           -v "FULL_FILE=$FULL_FILE,WORKDIR=$WORKDIR" \
           -N "egacrypt-$SHORTNAME" \
           -e "$JOBLOGDIR" \
           -o "$JOBLOGDIR" \
           -l "walltime=$( printf '%2d:%20d:00' $HOURS $MINUTES )" \
-          < "${BASH_SOURCE%/*}/JOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
+          < "${OUR_DIR}/JOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
     elif [ $CLUSTER_SYSTEM == "LSF" ]; then
-      bsub \
+      2>&1 bsub \
           -env "FULL_FILE=$FULL_FILE, WORKDIR=$WORKDIR" \
           -J "egacrypt-$SHORTNAME" \
           -Jd "encrypting $SHORTNAME ($FULL_FILE) for the EGA archive" \
           -e "$JOBLOGDIR/%J-$SHORTNAME.err" \
           -o "$JOBLOGDIR/%J-$SHORTNAME.out" \
           -W "$( printf '%2d:%02d' $HOURS $MINUTES )" \
-          < "${BASH_SOURCE%/*}/JOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
+          < "${OUR_DIR}/JOB-ega-encryption.sh" | tee -a "$SUBMITLOG"
     else
       echo "ERROR: specified unknown cluster system '$CLUSTER_SYSTEM'; no jobs submitted" | tee -a "$SUBMITLOG"
       exit 42
