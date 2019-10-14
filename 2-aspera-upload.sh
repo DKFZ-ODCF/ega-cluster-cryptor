@@ -41,7 +41,7 @@ WORKDIR="$( dirname "TO_ENCRYPT_LIST" )/files/"
 
 TO_ENCRYPT_LIST_LINES=$( grep -c -v -e '^$' -e '^#' "$TO_ENCRYPT_LIST" )
 echo "using file-list: $TO_ENCRYPT_LIST ($TO_ENCRYPT_LIST_LINES files)"
-echo "Uploading to: $ASPERA_USER@$ASPERA_HOST:$ASPERA_FOLDER, setting SPEED_LIMIT=${SPEED_LIMIT}"
+echo "Uploading to: ${ASPERA_USER}@${ASPERA_HOST}:${ASPERA_FOLDER}, setting SPEED_LIMIT=${SPEED_LIMIT}"
 
 
 # If we have a logically named to-encrypt_list, use/create an upload-file with the matching time
