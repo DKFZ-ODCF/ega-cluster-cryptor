@@ -28,7 +28,7 @@ echo "using cluster system: $CLUSTER_SYSTEM"
 
 # find wherever this script is, and load the util library next to it
 #   even when hidden behind symlinks
-OUR_DIR="$(dirname $(readlink -f "$0"))"
+OUR_DIR="$(dirname "$(readlink -f "$0")")"
 source "${OUR_DIR}/util.sh"
 
 # Get default, latest input file, OR whatever the user wants
@@ -51,13 +51,15 @@ fi
 # first input is the to-encrypt filelist, using `sed` to normalise for either absolute paths or relative paths in WORKDIR
 # second input is the contents of WORKDIR: all finished or partial encryption output, massaged with `sed` to match the original filename.
 toEncryptFiles=( $( cut -f2 "$TO_ENCRYPT_LIST" \
-      | sed -E -e 's#^.+/##' \
+      | sed -E -e 's#^.+/##' -e 's/ /\\ /g' \
       | sort
 ))
 workdirFiles=( $( find "$WORKDIR" -type f \( -name '*.gpg' -or -name '*.gpg.partial' \) \
-      | sed -E -e 's#^.+/##' -e 's/\.gpg(.partial)?$//' \
+      | sed -E -e 's#^.+/##' -e 's/\.gpg(.partial)?$//' -e 's/ /\\ /g' \
       | sort
 ))
+
+IFS='' # to preserve spaces in filenames in the 'printf $array' calls
 unencryptedFiles=( $( comm -23 \
   <( printf -- '%s\n' "${toEncryptFiles[@]}" ) \
   <( printf -- '%s\n' "${workdirFiles[@]}" ) \
