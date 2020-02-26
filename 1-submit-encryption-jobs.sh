@@ -59,6 +59,7 @@ workdirFiles=( $( find "$WORKDIR" -type f \( -name '*.gpg' -or -name '*.gpg.part
       | sort
 ))
 
+OLD_IFS="$IFS"
 IFS='' # to preserve spaces in filenames in the 'printf $array' calls
 unencryptedFiles=( $( comm -23 \
   <( printf -- '%s\n' "${toEncryptFiles[@]}" ) \
@@ -68,6 +69,7 @@ alreadyEncryptedFiles=( $( comm -12 \
   <( printf -- '%s\n' "${toEncryptFiles[@]}" ) \
   <( printf -- '%s\n' "${workdirFiles[@]}" ) \
 ) )
+IFS="$OLD_IFS"
 echo "found ${#alreadyEncryptedFiles[*]} encrypted and/or in-progress files. Submitting ${#unencryptedFiles[*]} new encryption jobs:"
 
 if [ ${#unencryptedFiles[*]} -ge 1 ]; then
