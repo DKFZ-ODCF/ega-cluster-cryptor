@@ -7,15 +7,15 @@
 #   1-submit-encryption-jobs.sh your-filelist.txt
 
 # Check if required EGA public key is known.
-gpg --no-tty --batch --list-keys EGA_Public_key >/dev/null 2>&1;
+gpg --no-tty --batch --list-keys 'European Genome-Phenome Archive (EGA)' >/dev/null 2>&1;
 if [ $? != 0 ]; then
   >&2 echo "ERROR: EGA public key not present in GPG keyring on this submission host
   -> Worker nodes probably cannot encrypt with EGA as recipient.
   Please import the EGA key!
 
-Public key should be obtained from EGA: https://ega-archive.org/submission/EGA_public_key .
+Public key should be obtained from EGA: https://ega-archive.org/submission/public_keys .
   (those who believe this author is trustworthy, can used the copy included with this script)
-  Import the obtained key with: \`gpg --import EGA_public_key.gpg\`
+  Import the obtained key with: \`gpg --import submission_2020_public.gpg.asc\`
 "
 
 exit 17

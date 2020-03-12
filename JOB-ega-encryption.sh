@@ -42,17 +42,17 @@ function cleanup_and_terminate() {
 cd "$WORKDIR"
 
 # check if we have the required key to encrypt with
-gpg --no-tty --batch --list-keys EGA_Public_key >/dev/null 2>&1;
+gpg --no-tty --batch --list-keys 'European Genome-Phenome Archive (EGA)' >/dev/null 2>&1;
 if [ $? != 0 ]; then
   >&2 echo "ERROR: EGA public key not present in GPG keyring on this worker node.
   -> Cannot encrypt with EGA as recipient.
 
 Did you import EGA's key to your keyring? (probably on the cluster headnode)
-  - If not: please do so with \`gpg --import EGA_public_key.gpg\`
+  - If not: please do so with \`gpg --import submission_2020_public.gpg.asc\`
   - If yes: this cluster apparantly doesn't automatically share config between headnodes and worker nodes.
     This script doesn't know how to handle that situation, so please contact your cluster admin.
 
-Public key should be obtained from EGA: https://ega-archive.org/submission/EGA_public_key .
+Public key should be obtained from EGA: https://ega-archive.org/submission/public_keys .
   (those who believe this author is trustworthy, can used the copy included with this script)
 "
 
@@ -92,7 +92,7 @@ trap 'cleanup_and_terminate ".walltime.failed" 2' SIGUSR2
 #  - Put all results into .partial files first, to signal that they are incomplete
 INNER_PIPESTATUS=$(mktemp --tmpdir="$WORKDIR" --suffix="-pipestatus-inner.tmp")
 tee < "$FILE" >(
-    gpg --encrypt --recipient EGA_Public_key \
+    gpg --encrypt --recipient 'European Genome-Phenome Archive (EGA)' \
       --no-tty --batch \
       --trust-model=always \
     | tee \

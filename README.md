@@ -70,8 +70,10 @@ It supports both PBS/Torque clusters, as well as LSF clusters
 
 
 Encryption is GPG-based, using 
-[EGA's public key](https://ega-archive.org/submission/EGA_public_key).
+[EGA's public key](https://ega-archive.org/submission/public_keys).
 The submission script will check if GPG and this key are available.
+For convenience purposes, a copy of EGA's key (as of 2020-03-12) is included: `submission_2020_public.gpg.asc`.
+The paranoid will of course verify that this key matches that published by EGA itself.
 
 call it as follows:
 ```sh
