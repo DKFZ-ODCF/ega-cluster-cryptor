@@ -6,9 +6,10 @@
 # cpu time, when not overriden by submitter
 # memory is very generous, 98% of jobs consistently use 10.5 +- 0,2 MB of memory,
 #   but the remaining outliers jump to ~120MB; no idea why...
-#PBS -l walltime=08:00:00,mem=200MB
+#PBS -l walltime=08:00:00,mem=150MB
 #BSUB -W 08:00
-#BSUB -M 200MB
+#BSUB -M 150MB
+#BSUB -R "rusage[mem=150MB]"
 # request 1 node
 #PBS  -l nodes=1
 #BSUB -n 1
