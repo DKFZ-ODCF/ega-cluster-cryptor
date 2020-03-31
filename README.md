@@ -97,6 +97,14 @@ encrypted file (`filename.gpg`), and md5 checksums for both encrypted and
 unencrypted versions of said file (`filename.md5` and `filename.gpg.md5`).
 This trio is suitable for upload directly to EGA's submission inbox via Aspera or FTP.
 
+### Job management
+
+Jobs are all named 'egacrypt-{something}' for easy identification.
+
+On the LSF system, they're also submitted into a single jobgroup (`/$USER/egacrypt`), for batch-management, e.g.
+  - `bjobs -g /$USER/egacrypt` to inspect
+  - `bkill -g /$USER/egacrypt 0` to kill all ega-cluster-cryptor jobs.
+
 ## upload: 2-aspera-upload.sh
 
 This script will upload the encrypted results of a filelist to EGA's submission

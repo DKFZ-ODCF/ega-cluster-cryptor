@@ -21,8 +21,13 @@ Public key should be obtained from EGA: https://ega-archive.org/submission/publi
 exit 17
 fi
 
+# CONFIG: which job system are we using?
 CLUSTER_SYSTEM='LSF'
 #CLUSTER_SYSTEM='PBS'
+
+# for LSF: which jobgroup to use when submitting.
+JOBGROUP="/$USER/egacrypt"
+
 
 echo "using cluster system: $CLUSTER_SYSTEM"
 
@@ -72,9 +77,27 @@ alreadyEncryptedFiles=( $( comm -12 \
 IFS="$OLD_IFS"
 echo "found ${#alreadyEncryptedFiles[*]} encrypted and/or in-progress files. Submitting ${#unencryptedFiles[*]} new encryption jobs:"
 
+# If we have anything to encrypt at all..
 if [ ${#unencryptedFiles[*]} -ge 1 ]; then
+  # .. check if our jobgroup is available. If not, create it with default limit.
+  #
+  # After creation, we don't touch the limit anymore, so people can finetune it for their cluster environment.
+  # We impose this concurrency-limit to avoid swamping cluster I/O.
+  #   Too many parallel jobs bottleneck the storage, and make our walltime estimate meaningless.
+  # see: https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.3/lsf_admin/job_group_limits.html
+  ## trickery with grep needed, because bjgroup always exits with '0/success', even if group not found.. sigh..
+  ## and (piped) grep invocation is annoyingly hard to write inside "[ ]".. double sigh...
+  2>&1 bjgroup -s $JOBGROUP | grep -q "No job group found" -; GREPEXIT=$?
+  if [  $GREPEXIT -eq "0" ]; then
+    DEFAULTLIMIT=16
+    echo "Jobgroup \"$JOBGROUP\" not found, creating with default limit $DEFAULTLIMIT"
+    bgadd -L "$DEFAULTLIMIT" "$JOBGROUP"
+  fi
+
+  # .. and print the header for our job-submissions
   echo -e "FILE                        \tWTIME\tSUBMISSION_FEEDBACK" | tee -a "$SUBMITLOG"
 fi
+
 for SHORTNAME in ${unencryptedFiles[*]}; do
   FULL_FILE="$WORKDIR/$SHORTNAME"
   if [ ! -e "$FULL_FILE" ]; then
@@ -109,6 +132,7 @@ for SHORTNAME in ${unencryptedFiles[*]}; do
     elif [ $CLUSTER_SYSTEM == "LSF" ]; then
       2>&1 bsub \
           -env "FULL_FILE=$FULL_FILE, WORKDIR=$WORKDIR" \
+          -g "$JOBGROUP" \
           -J "egacrypt-$SHORTNAME" \
           -Jd "encrypting $SHORTNAME ($FULL_FILE) for the EGA archive" \
           -e "$JOBLOGDIR/%J-$SHORTNAME.err" \
