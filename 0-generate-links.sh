@@ -35,11 +35,13 @@ fi
 # Prepare soft links generation for all files in MAPFILE
 # We output this to a separate (temporary) script, and compile a list of all these links, for further processing.
 #   -F                -> accept either semicolon and/or tab as separator
+#   -v RS='\r?\n'     -> \r can also be included in the record separator, this way DOS text files are also supported.
 #   !( /^$/ || /^#/ ) -> ignore empty and/or comment lines
 # TODO: we should probably emit non-absolute paths, for more flexibility across machines
 TO_ENCRYPT_LIST="to-encrypt_$DATE.txt"
 LINK_SCRIPT="_create_links-$DATE.sh"
 awk -F '[;\t]+' \
+   -v RS='\r?\n' \
    -v cwd="$(pwd)"  \
    -v workdir="$WORKDIR" \
    -v to_encrypt_list="$TO_ENCRYPT_LIST" \
