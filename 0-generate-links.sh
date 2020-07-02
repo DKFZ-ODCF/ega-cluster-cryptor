@@ -1,29 +1,27 @@
 #!/bin/sh
 
 # MAPFILE contains a two-column format:
-#   1) path to the original file to upload
+#   1) path to the original file to upload, as absolute path
 #   2) the alias/new name under which to upload it
 # It can be separated by either (multiple) tabs, or a semicolon ";"
+# Empty lines and lines starting with '#' (comments) are ignored.
 MAPFILE="$1"
 
-set -eu
+set -u
 
 # first argument not empty?
 if [ -z "$MAPFILE" ]; then
-  echo "ERROR: Please specify a mapping file containing the files to link"
-  echo "  Usage: $0 /PATH/TO/MAPPING/FILE.txt"
+  >&2 echo -e "\e[91mERROR:\e[39m Please specify a mapping file containing the files to link"
+  >&2 echo "  Usage: $0 /PATH/TO/MAPPING/FILE.txt"
   exit 1
 fi
 
 # does filename of first argument exist?
 if [ ! -e "$MAPFILE" ]; then
-  echo "ERROR: Could not find specified mapping file to link:"
-  echo "  missing: $MAPFILE"
+  >&2 echo -e "\e[91mERROR:\e[39m Could not find specified mapping file to link:"
+  >&2 echo "  missing: $MAPFILE"
   exit 2
 fi
-
-# get date only once, so createlinks and to_encrypt_list have the identical one, up to the second
-DATE=$(date '+%Y-%m-%d_%H:%M:%S')
 
 # prepare working subdir, so we don't clutter the current directory with dozens/hundreds of
 # links and encrypted result files (1 original + 1 encrypted + 2 checksums adds up fast!)
@@ -32,32 +30,22 @@ if [ ! -d "$WORKDIR" ]; then
   mkdir "$WORKDIR"
 fi
 
-# Prepare soft links generation for all files in MAPFILE
-# We output this to a separate (temporary) script, and compile a list of all these links, for further processing.
-#   -F                -> accept either semicolon and/or tab as separator
-#   -v RS='\r?\n'     -> \r can also be included in the record separator, this way DOS text files are also supported.
-#   !( /^$/ || /^#/ ) -> ignore empty and/or comment lines
-# TODO: we should probably emit non-absolute paths, for more flexibility across machines
-TO_ENCRYPT_LIST="to-encrypt_$DATE.txt"
-LINK_SCRIPT="_create_links-$DATE.sh"
-awk -F '[;\t]+' \
-   -v RS='\r?\n' \
-   -v cwd="$(pwd)"  \
-   -v workdir="$WORKDIR" \
-   -v to_encrypt_list="$TO_ENCRYPT_LIST" \
-   -v linkscript="$LINK_SCRIPT" \
-   '!( /^$/ || /^#/ ) {
-      print $2 > to_encrypt_list;
-      print "ln -s \"" $1 "\" \"" workdir "/" $2 "\"" > linkscript;
-    }' "$MAPFILE"
+# output file
+TO_ENCRYPT_LIST="to-encrypt_$(date '+%Y-%m-%d_%H:%M:%S').txt"
 
-# print blank line, to highlight any errors the linking might produce
-# such as double file-names
-echo
-# actually create softlinks
-sh "$LINK_SCRIPT";
-# and another blank line to "close"
-echo
+touch "$TO_ENCRYPT_LIST" # generate an empty file, even if all file-paths error out.
 
-echo "done! newly created links in:   $TO_ENCRYPT_LIST"
+# grep to ignore comments and empty lines
+# IFS: split on tabs and/or semicolon
+#      \r to swallow leftovers from DOS line endings.
+grep -v -e '^#' -e '^\w*$' "$MAPFILE" | while IFS=$'\t;\r' read -r LOCALABSPATH EGANAME; do
+  if [ -e "$LOCALABSPATH" ]; then
+    echo "$EGANAME" >> "$TO_ENCRYPT_LIST"
+    ln -s "${LOCALABSPATH}" "${WORKDIR}/${EGANAME}"
+  else
+    >&2 echo -e "\e[93mWARNING:\e[39m ${LOCALABSPATH} not found; skipping!"
+  fi
+done
+
+echo -e "\e[92mDone!\e[39m Newly created links in:   $TO_ENCRYPT_LIST"
 
