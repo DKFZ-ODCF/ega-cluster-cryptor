@@ -121,3 +121,4 @@ if [ $ASPERA_EXIT_STATUS -ne 0 ]; then
 else
   echo "$(date '+%Y-%m-%d_%H:%M:%S'): Aspera transfer completed succesfully!";
 fi
+exit $ASPERA_EXIT_STATUS
