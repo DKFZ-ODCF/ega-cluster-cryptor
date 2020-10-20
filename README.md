@@ -133,3 +133,21 @@ most-recently modified `to-encrypt*`.
 
 Since upload can easily take multiple days, we recommend doing this in `nohup`,
 `screen` or `tmux` sessions.
+
+## upload: ega22-aspera-retry.sh
+
+This script wraps `2-aspera-upload` with retries, in case bad network conditions keep aborting your upload.
+
+Call it as follows:
+```sh
+cd /path/to/work-dir
+source your-egalogin-aspera.conf
+# optional:  export SPEED_LIMIT=99M
+UPLOADER=e.mail@example.com ega22-upload-retries [to-encrypt_<DATE>.txt] [ N ]
+```
+
+if no `to-encrypt-file.txt` is specified, `2-aspera-upload` will default to autodetection as above.
+`N` is the number of retries (default 10).
+
+If the upload-server has a sanely configured `mail`-program, you will receive an email notifying you of status (successful or errors)
+once the script stops retrying (either because of success, or because the maximum number of retries was reached).
