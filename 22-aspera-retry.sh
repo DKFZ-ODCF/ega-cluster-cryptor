@@ -11,7 +11,9 @@ fi
 
 
 # Keep trying until N retries, with early exit on Aspera-success.
-RETRIES=${2:=10}
+RETRIES=$2 # take from 2nd CLI arg
+: ${RETRIES:=10}  # set default value, in case empty from CLI-args; cannot do this directly because cannot assign to $2
+
 for i in $(seq $RETRIES); do
    echo " ===== $(date '+%F %T'): upload attempt $i for $UPLOADER ======";
    ega2-aspera-upload $1
