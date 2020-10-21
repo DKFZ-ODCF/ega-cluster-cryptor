@@ -20,8 +20,6 @@ for i in $(seq $RETRIES); do
    ASP_EXIT=$?
    if [ $ASP_EXIT -eq 0 ]; then
      break;
-   else
-     echo "retries ASP_EXIT: $ASP_EXIT"
    fi
 done
 
