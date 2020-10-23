@@ -65,7 +65,7 @@ workdirFiles=( $( find "$WORKDIR" -type f \( -name '*.gpg' -or -name '*.gpg.part
 ))
 
 OLD_IFS="$IFS"
-IFS='' # to preserve spaces in filenames in the 'printf $array' calls
+IFS='\n' # to preserve spaces in filenames in the 'printf $array' calls
 unencryptedFiles=( $( comm -23 \
   <( printf -- '%s\n' "${toEncryptFiles[@]}" ) \
   <( printf -- '%s\n' "${workdirFiles[@]}" ) \
