@@ -65,7 +65,10 @@ workdirFiles=( $( find "$WORKDIR" -type f \( -name '*.gpg' -or -name '*.gpg.part
 ))
 
 OLD_IFS="$IFS"
-IFS='\n' # to preserve spaces in filenames in the 'printf $array' calls
+IFS="
+" # Set separator to '\n' to preserve spaces in filenames in the 'printf $array' calls
+  # This multi-line weirdness sets IFS to '\n'; there are weird escaping problems with all other syntaxes that you would consider 'normal'
+  # see also: https://stackoverflow.com/q/16831429/2964696
 unencryptedFiles=( $( comm -23 \
   <( printf -- '%s\n' "${toEncryptFiles[@]}" ) \
   <( printf -- '%s\n' "${workdirFiles[@]}" ) \
