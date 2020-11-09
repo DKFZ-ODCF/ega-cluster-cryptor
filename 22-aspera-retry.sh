@@ -21,6 +21,12 @@ for i in $(seq $RETRIES); do
    if [ $ASP_EXIT -eq 0 ]; then
      break;
    fi
+   
+   # Give user a couple of seconds to hit Ctrl+C to escape out of this script
+   # rather than having to repeatedly kill Aspera $RETRIES times
+   USER_GRACE_PERIOD=5
+   echo "hit Ctrl+C in the next $USER_GRACE_PERIOD seconds to break out of the retry-loop."
+   sleep $USER_GRACE_PERIOD
 done
 
 # we finished retrying, check if upload finished successfully or not
