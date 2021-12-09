@@ -1,4 +1,0 @@
-# ignore inputs/outputs of these scripts, in case we are doing local testing
-files/
-to-encrypt*.txt
-mapfile*.txt
